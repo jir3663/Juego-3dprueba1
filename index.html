@@ -23,7 +23,6 @@
             z-index: 1;
         }
 
-        /* HUD DE JUEGO */
         .ui-layer {
             position: absolute;
             z-index: 10;
@@ -60,7 +59,6 @@
             transition: width 0.3s ease;
         }
 
-        /* PANEL LATERAL DE JUGUETES */
         .side-toys {
             position: absolute;
             top: 75px; left: 10px;
@@ -81,7 +79,6 @@
         }
         .toy-pill:active { background: #ff0055; color: #fff; }
 
-        /* CAJA DE DIÁLOGO INFERIOR */
         .dialog-panel {
             background: rgba(10, 10, 18, 0.95);
             border: 2px solid #ff0055;
@@ -125,7 +122,6 @@
         }
         .option-btn:active { background: #ff0055; }
 
-        /* MENÚ INICIAL */
         #main-menu {
             position: absolute;
             top: 0; left: 0;
@@ -203,13 +199,11 @@
 </head>
 <body>
 
-    <!-- MENÚ PRINCIPAL -->
     <div id="main-menu">
         <h1 style="color: #ff0055; font-size: 1.5rem; margin: 10px 0 5px 0; text-align: center;">LUST MULTIVERSE</h1>
         <p style="color: #888; font-size: 0.8rem; text-align: center; margin-bottom: 15px;">Selecciona estilo y tropo para jugar</p>
         
         <div class="menu-container">
-            <!-- Estilo Visual -->
             <div class="section-box">
                 <div class="section-label">1. Estilo Visual</div>
                 <div class="grid-cards">
@@ -225,7 +219,6 @@
                 </div>
             </div>
 
-            <!-- Tropo / Historia -->
             <div class="section-box">
                 <div class="section-label">2. Historia / Tropo</div>
                 <div class="grid-cards">
@@ -242,10 +235,8 @@
         </div>
     </div>
 
-    <!-- ESCENARIO 3D -->
     <div id="canvas-container"></div>
 
-    <!-- HUD DE JUEGO -->
     <div class="ui-layer" id="game-hud" style="display: none;">
         <div class="top-hud">
             <div>
@@ -271,7 +262,7 @@
         </div>
     </div>
 
-    <!-- Three.js CDN -->
+    <!-- Three.js CDN Seguro -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         let currentStyle = 'Realista', currentColor = 0x334155;
@@ -317,7 +308,6 @@
             }
         }
 
-        // ÁRBOL DE HISTORIAS
         const story = {
             node1: {
                 text: () => `Estás en la situación de (${currentTrope}): ${currentDesc}. Se acerca lentamente con una sonrisa cómplice. ¿Qué haces?`,
@@ -378,11 +368,16 @@
             
             renderNode();
 
-            try {
-                init3D();
-            } catch(err) {
-                console.warn("Error 3D:", err);
-            }
+            // Inicialización de seguridad 3D protegida
+            setTimeout(() => {
+                try {
+                    if (typeof THREE !== 'undefined') {
+                        init3D();
+                    }
+                } catch(e) {
+                    console.log("Modo texto activo por limitación gráfica.");
+                }
+            }, 100);
         }
 
         function renderNode() {
@@ -424,7 +419,7 @@
             camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 1.5, 5.5);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
             container.appendChild(renderer.domElement);
 
@@ -437,69 +432,60 @@
 
             charGroup = new THREE.Group();
             
-            let skinMat;
-            if(customPhoto && currentStyle === 'Personalizado') {
-                const tex = new THREE.TextureLoader().load(customPhoto);
-                skinMat = new THREE.MeshStandardMaterial({ map: tex });
-            } else {
-                skinMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.5 });
-            }
-
+            let skinMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.5 });
             const outfitMat = new THREE.MeshStandardMaterial({ color: currentColor, roughness: 0.3 });
 
-            // CONSTRUCTOR DE MODELOS 3D ESTILIZADOS
             if (currentStyle === 'Realista' || currentStyle === 'Personalizado') {
                 const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.2), outfitMat);
                 body.position.y = 0.6;
-                const head = new THREE.Mesh(currentStyle === 'Personalizado' ? new THREE.BoxGeometry(0.55, 0.65, 0.5) : new THREE.SphereGeometry(0.32, 16, 16), skinMat);
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 16), skinMat);
                 head.position.y = 1.45;
                 charGroup.add(body, head);
             } 
             else if (currentStyle === 'Manga') {
-                // Cuerpo cónico y pelo puntiagudo característico
                 const body = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.2, 16), outfitMat);
                 body.position.y = 0.6;
                 const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), skinMat);
                 head.position.y = 1.45;
-                // Mechón de pelo anime superior
-                const hairMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
-                const hair = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.5, 4), hairMat);
-                hair.position.set(0, 1.85, 0);
-                hair.rotation.z = -0.2;
-                charGroup.add(body, head, hair);
+                charGroup.add(body, head);
             } 
             else if (currentStyle === 'Simpson') {
                 const yellowSkin = new THREE.MeshStandardMaterial({ color: 0xffd90f, roughness: 0.4 });
-                const bluePants = new THREE.MeshStandardMaterial({ color: 0x0085c3 });
-                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.0), bluePants);
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.0), outfitMat);
                 body.position.y = 0.5;
-                // Cabeza cilíndrica alargada típica
                 const head = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.85, 16), yellowSkin);
                 head.position.y = 1.35;
                 charGroup.add(body, head);
             } 
-            else if (currentStyle === 'Looney Tunes') {
-                // Cuerpo esférico y orejas largas
-                const body = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 16), outfitMat);
-                body.position.y = 0.55;
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), outfitMat);
-                head.position.y = 1.35;
-                const earGeo = new THREE.CapsuleGeometry(0.1, 0.6, 4, 8);
-                const ear1 = new THREE.Mesh(earGeo, outfitMat);
-                ear1.position.set(-0.2, 1.9, 0);
-                ear1.rotation.z = -0.2;
-                const ear2 = ear1.clone();
-                ear2.position.x = 0.2;
-                ear2.rotation.z = 0.2;
-                charGroup.add(body, head, ear1, ear2);
-            } 
-            else if (currentStyle === 'Padre de Familia') {
-                // Cuerpo robusto y barbilla prominente
-                const body = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.1, 0.55), outfitMat);
-                body.position.y = 0.55;
-                const head = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 0.65), skinMat);
-                head.position.y = 1.35;
+            else {
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.2, 0.5), outfitMat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), skinMat);
+                head.position.y = 1.45;
                 charGroup.add(body, head);
-            } 
-            else if (currentStyle === 'Demon Slayer') {
-                const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.45),
+            }
+
+            charGroup.position.y = -0.6;
+            scene.add(charGroup);
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if(charGroup) {
+                charGroup.rotation.y += 0.005;
+            }
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            if(camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+    </script>
+</body>
+</html>
