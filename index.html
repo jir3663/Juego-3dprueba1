@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiverso Visual Novel +18 con Foto Personalizada</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b0b14;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            color: #fff;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        .ui-layer {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        .top-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 12px;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .meter-container {
+            width: 200px;
+            background: #333;
+            height: 14px;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid #555;
+        }
+        #tension-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0055, #ffcc00);
+            transition: width 0.4s ease;
+        }
+
+        .dialog-box {
+            background: rgba(10, 10, 20, 0.85);
+            border: 2px solid #ff0055;
+            border-radius: 15px;
+            padding: 20px;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            margin-bottom: 10px;
+            box-shadow: 0 10px 30px rgba(255,0,85,0.3);
+        }
+
+        #speaker-name {
+            font-size: 1.1rem;
+            color: #ff0055;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        #dialog-text {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            min-height: 40px;
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #1f1f38, #2a2a50);
+            color: white;
+            border: 1px solid #ff0055;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: left;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .choice-btn:hover {
+            background: linear-gradient(135deg, #ff0055, #cc0044);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255,0,85,0.5);
+        }
+
+        /* Menú inicial */
+        #menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 10, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .char-card {
+            background: #16162c;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .char-card:hover {
+            border-color: #ff0055;
+            transform: scale(1.05);
+            background: #202040;
+            box-shadow: 0 0 20px rgba(255,0,85,0.4);
+        }
+
+        .upload-card {
+            background: linear-gradient(135deg, #2a1b3d, #4a154b);
+            border: 2px dashed #ff0055;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .instruction-hint {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #aaa;
+            pointer-events: none;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENÚ DE SELECCIÓN Y CARGA DE FOTO -->
+    <div id="menu-overlay">
+        <h1 style="color: #ff0055; font-size: 2.2rem; margin-bottom: 5px;">MULTIVERSO +18: INTERACCIONES</h1>
+        <p style="color: #bbb; max-width: 600px;">Sube tu propia fotografía para mapearla en el rostro 3D o elige un estilo predefinido.</p>
+        
+        <div class="char-grid">
+            <label class="char-card upload-card" for="file-input">
+                <h3 style="color: #ff77aa;">Subir Foto</h3>
+                <p style="font-size:0.75rem; color:#ddd; margin-top:5px;">Usa tu imagen local</p>
+            </label>
+            <input type="file" id="file-input" accept="image/*" onchange="loadCustomImage(event)">
+
+            <div class="char-card" onclick="startGame('Realista', 'John', 0x334155)">
+                <h3>Realista</h3>
+                <p style="font-size:0.8rem; color:#888;">Estilo sobrio</p>
+            </div>
+            <div class="char-card" onclick="startGame('Manga', 'Kenshi', 0xff0055)">
+                <h3>Manga / Anime</h3>
+                <p style="font-size:0.8rem; color:#888;">Expresivo</p>
+            </div>
+            <div class="char-card" onclick="startGame('Simpson', 'Homero', 0xd97706)">
+                <h3>Simpson</h3>
+                <p style="font-size:0.8rem; color:#888;">Clásico animado</p>
+            </div>
+            <div class="char-card" onclick="startGame('Looney Tunes', 'Bugs', 0x94a3b8)">
+                <h3>Looney Tunes</h3>
+                <p style="font-size:0.8rem; color:#888;">Dinámico</p>
+            </div>
+            <div class="char-card" onclick="startGame('Padre de Familia', 'Peter', 0x16a34a)">
+                <h3>Padre de Familia</h3>
+                <p style="font-size:0.8rem; color:#888;">Corpulento</p>
+            </div>
+            <div class="char-card" onclick="startGame('Demon Slayer', 'Tanjiro', 0x0284c7)">
+                <h3>Demon Slayer</h3>
+                <p style="font-size:0.8rem; color:#888;">Acción y diseño</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESCENARIO 3D -->
+    <div id="canvas-container"></div>
+
+    <!-- INTERFAZ DE NOVELA VISUAL +18 -->
+    <div class="ui-layer" id="game-ui" style="display: none;">
+        <div class="top-hud">
+            <div>
+                <span id="hud-char-title" style="font-weight: bold; color: #ff0055;">Personaje</span>
+                <div style="font-size: 0.8rem; color: #aaa;">Modo Interactivo +18</div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; margin-bottom: 3px; text-align: right;">Índice de Tensión / Pasión</div>
+                <div class="meter-container">
+                    <div id="tension-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instruction-hint">💡 Haz clic sobre el personaje 3D o elige las opciones inferiores para interactuar.</div>
+
+        <div class="dialog-box">
+            <div id="speaker-name">Nombre</div>
+            <div id="dialog-text">Cargando diálogo...</div>
+            <div class="choices-container" id="choices-box"></div>
+        </div>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, characterGroup;
+        let currentStyle = '', currentName = '', customTextureURL = null;
+        let tensionLevel = 0;
+        let currentNode = 'start';
+
+        const storyData = {
+            start: {
+                speaker: () => currentName,
+                text: "Te mira fijamente con una sonrisa sugerente y se acerca lentamente a ti en la habitación tenue. ¿Qué deseas hacer?",
+                choices: [
+                    { text: "Acercarte y acariciar su rostro suavemente.", next: "caricia", tension: 20 },
+                    { text: "Susurrarle algo atrevido al oído.", next: "susurro", tension: 35 },
+                    { text: "Tomarle de la cintura de forma firme y directa.", next: "cintura", tension: 50 }
+                ]
+            },
+            caricia: {
+                speaker: () => currentName,
+                text: "Cierra los ojos un instante disfrutando del contacto, arqueando ligeramente el cuerpo hacia ti con respiración agitada.",
+                choices: [
+                    { text: "Deslizar tus manos hacia su espalda y profundizar el acercamiento.", next: "apasionado", tension: 40 },
+                    { text: "Dar un beso lento en su cuello.", next: "cuello", tension: 60 }
+                ]
+            },
+            susurro: {
+                speaker: () => currentName,
+                text: "Se le escapa una ligera risa nerviosa seguida de un suspiro profundo. Su mirada cambia por completo, volviéndose más intensa.",
+                choices: [
+                    { text: "Morder suavemente su lóbulo y tirar de él.", next: "apasionado", tension: 50 },
+                    { text: "Empujarle suavemente contra la pared de la habitación.", next: "pared", tension: 70 }
+                ]
+            },
+            cintura: {
+                speaker: () => currentName,
+                text: "Un escalofrío recorre su cuerpo ante el agarre repentino. Te sostiene de los hombros con fuerza mientras aumenta la tensión.",
+                choices: [
+                    { text: "Unir vuestros labios en un beso largo y apasionado.", next: "beso_intenso", tension: 75 },
+                    { text: "Cargarle en brazos hacia la cama.", next: "cama", tension: 90 }
+                ]
+            },
+            cuello: {
+                speaker: () => currentName,
+                text: "Tus labios rozan su piel sensible, provocando que deje escapar un gemido ahogado mientras se aferra a tu ropa.",
+                choices: [
+                    { text: "Elevar la intensidad y pasar a la siguiente fase íntima.", next: "climax_fase1", tension: 85 }
+                ]
+            },
+            apasionado: {
+                speaker: () => currentName,
+                text: "La distancia entre ambos desaparece por completo. El ambiente se vuelve sumamente cálido y cercano.",
+                choices: [
+                    { text: "Continuar explorando cada rincón con total libertad.", next: "climax_fase1", tension: 80 }
+                ]
+            },
+            pared: {
+                speaker: () => currentName,
+                text: "Queda contra la pared, respirando agitadamente y pidiendo más con la mirada.",
+                choices: [
+                    { text: "Elevar la temperatura sin contemplaciones.", next: "climax_fase1", tension: 95 }
+                ]
+            },
+            beso_intenso: {
+                speaker: () => currentName,
+                text: "Un beso profundo e interminable que eleva la pasión al máximo nivel del encuentro.",
+                choices: [
+                    { text: "Llevar la situación hasta el clímax total.", next: "climax_fase1", tension: 100 }
+                ]
+            },
+            cama: {
+                speaker: () => currentName,
+                text: "Te acompaña con total complicidad mientras caen juntos sobre la superficie suave, listos para la intimidad sin censura.",
+                choices: [
+                    { text: "Desatar por completo la pasión final (+18).", next: "climax_fase1", tension: 100 }
+                ]
+            },
+            climax_fase1: {
+                speaker: () => "NARRADOR (+18)",
+                text: "🔥 [ESCENA ÍNTIMA DESBLOQUEADA] La interacción alcanza su punto álgido con caricias intensas, respiración entrelazada y una secuencia interactiva completa de alto voltaje.",
+                choices: [
+                    { text: "🔄 Reiniciar y probar de nuevo", next: "start", tension: 0 }
+                ]
+            }
+        };
+
+        function loadCustomImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customTextureURL = e.target.result;
+                    startGame('Personalizado', 'Tu Personaje', 0x666666);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function init3D(style, baseColor) {
+            const container = document.getElementById('canvas-container');
+            container.innerHTML = '';
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0d0d1a);
+            scene.fog = new THREE.FogExp2(0x0d0d1a, 0.04);
+
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1.5, 6);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            const ambient = new THREE.AmbientLight(0xffb6c1, 0.6);
+            scene.add(ambient);
+
+            const pointLight = new THREE.PointLight(0xff0055, 1.5, 10);
+            pointLight.position.set(2, 3, 2);
+            scene.add(pointLight);
+
+            const pointLight2 = new THREE.PointLight(0x00d2ff, 1.0, 10);
+            pointLight2.position.set(-2, 1, 2);
+            scene.add(pointLight2);
+
+            characterGroup = new THREE.Group();
+            buildCharacterMesh(style, baseColor);
+            scene.add(characterGroup);
+
+            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+            animate3D();
+        }
+
+        function buildCharacterMesh(style, baseColor) {
+            let headMat;
+
+            if (customTextureURL && style === 'Personalizado') {
+                const textureLoader = new THREE.TextureLoader();
+                const userTexture = textureLoader.load(customTextureURL);
+                headMat = new THREE.MeshStandardMaterial({ map: userTexture, roughness: 0.4 });
+            } else {
+                headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.4 });
+            }
+
+            const mat = new THREE.MeshStandardMaterial({ color: baseColor, roughness: 0.3 });
+
+            if (style === 'Personalizado') {
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.2), mat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.7, 0.5), headMat);
+                head.position.y = 1.4;
+                characterGroup.add(body, head);
+            } else if (style === 'Realista') {
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.2), mat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), headMat);
+                head.position.y = 1.4;
+                characterGroup.add(body, head);
+            } else if (style === 'Manga') {
+                const body = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1.1, 16), mat);
+                body.position.y = 0.55;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16), headMat);
+                head.position.y = 1.35;
+                characterGroup.add(body, head);
+            } else if (style === 'Simpson') {
+                const yellowSkin = new THREE.MeshStandardMaterial({ color: 0xffd90f });
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.9), mat);
+                body.position.y = 0.45;
+                const head = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.8, 16), yellowSkin);
+                head.position.y = 1.3;
+                characterGroup.add(body, head);
+            } else if (style === 'Looney Tunes') {
+                const body = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), mat);
+                body.position.y = 0.5;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), mat);
+                head.position.y = 1.25;
+                characterGroup.add(body, head);
+            } else if (style === 'Padre de Familia') {
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 0.5), mat);
+                body.position.y = 0.5;
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), headMat);
+                head.position.y = 1.2;
+                characterGroup.add(body, head);
+            } else if (style === 'Demon Slayer') {
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.4), mat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), headMat);
+                head.position.y = 1.4;
+                characterGroup.add(body, head);
+            }
+
+            characterGroup.position.y = -0.7;
+        }
+
+        let clock = new THREE.Clock();
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            const elapsedTime = clock.getElapsedTime();
+            if (characterGroup) {
+                characterGroup.rotation.y = Math.sin(elapsedTime * 0.8) * 0.15;
+                characterGroup.position.y = -0.7 + Math.sin(elapsedTime * 1.5) * 0.03;
+            }
+            renderer.render(scene, camera);
+        }
+
+        function onPointerDown(event) {
+            tensionLevel = Math.min(100, tensionLevel + 15);
+            updateHUD();
+
+            if (characterGroup) {
+                characterGroup.scale.set(1.1, 0.9, 1.1);
+                setTimeout(() => characterGroup.scale.set(1, 1, 1), 200);
+            }
+        }
+
+        window.startGame = function(style, name, color) {
+            currentStyle = style;
+            currentName = name;
+            tensionLevel = 0;
+            currentNode = 'start';
+
+            document.getElementById('menu-overlay').style.display = 'none';
+            document.getElementById('game-ui').style.display = 'flex';
+            document.getElementById('hud-char-title').innerText = `${name} (${style})`;
+
+            init3D(style, color);
+            updateNode();
+        }
+
+        function updateNode() {
+            const node = storyData[currentNode];
+            if (!node) return;
+
+            document.getElementById('speaker-name').innerText = typeof node.speaker === 'function' ? node.speaker() : node.speaker;
+            document.getElementById('dialog-text').innerText = node.text;
+
+            const choicesBox = document.getElementById('choices-box');
+            choicesBox.innerHTML = '';
+
+            node.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerText = choice.text;
+                btn.onclick = () => {
+                    tensionLevel = Math.min(100, tensionLevel + choice.tension);
+                    currentNode = choice.next;
+                    updateHUD();
+      
