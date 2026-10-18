@@ -2,14 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiverso +18 - Edición Definitiva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lust Multiverse - Visual Novel Engine</title>
     <style>
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             overflow: hidden;
-            background-color: #05050a;
+            background-color: #050508;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
             color: #fff;
@@ -17,289 +18,317 @@
 
         #canvas-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             z-index: 1;
         }
 
+        /* CAPA DE INTERFAZ ESTILO LUSTFIELD */
         .ui-layer {
             position: absolute;
             z-index: 10;
             pointer-events: none;
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-sizing: border-box;
-            padding: 15px;
+            padding: 12px;
         }
 
+        /* Panel Superior de Estadísticas */
         .top-hud {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(15, 15, 25, 0.85);
             padding: 10px 15px;
             border-radius: 12px;
             pointer-events: auto;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        .meter-container {
-            width: 150px;
+        .stat-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .meter-bar-container {
+            width: 140px;
             background: #222;
-            height: 12px;
-            border-radius: 6px;
+            height: 10px;
+            border-radius: 5px;
             overflow: hidden;
             border: 1px solid #444;
         }
-        #tension-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff0055, #ffcc00, #ff0000);
-            transition: width 0.3s ease;
+        #affection-bar {
+            width: 0%; height: 100%;
+            background: linear-gradient(90deg, #ff0055, #ff3399);
+            transition: width 0.4s ease;
         }
 
-        .toys-panel {
+        /* Panel Lateral de Juguetes / Accesorios */
+        .side-panel {
+            position: absolute;
+            top: 80px; left: 12px;
             display: flex;
-            gap: 6px;
+            flex-direction: column;
+            gap: 8px;
             pointer-events: auto;
-            margin-top: 5px;
-            flex-wrap: wrap;
         }
-        .toy-btn {
-            background: #2a1b3d;
+        .action-btn {
+            background: rgba(20, 20, 35, 0.9);
             border: 1px solid #ff0055;
             color: #ffb6c1;
-            padding: 4px 8px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-align: left;
+            backdrop-filter: blur(4px);
             transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
-        .toy-btn:hover {
+        .action-btn:hover {
             background: #ff0055;
             color: white;
+            transform: translateX(3px);
         }
 
-        .dialog-box {
-            background: rgba(10, 10, 20, 0.95);
+        /* Caja de Diálogo Estilo Visual Novel Inferior */
+        .dialog-container {
+            background: rgba(10, 10, 18, 0.95);
             border: 2px solid #ff0055;
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 16px;
+            padding: 18px;
             pointer-events: auto;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 40px rgba(255, 0, 85, 0.35);
             margin-bottom: 5px;
-            box-shadow: 0 10px 30px rgba(255,0,85,0.4);
         }
 
         #speaker-name {
-            font-size: 1rem;
-            color: #ff0055;
+            font-size: 1.05rem;
+            color: #ff3399;
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         #dialog-text {
-            font-size: 1rem;
-            line-height: 1.4;
-            margin-bottom: 12px;
-            min-height: 35px;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin-bottom: 14px;
+            min-height: 45px;
+            color: #f1f1f1;
         }
 
-        .choices-container {
+        .choices-box {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .choice-btn {
-            background: linear-gradient(135deg, #1f1f38, #2a2a50);
+        .choice-option {
+            background: linear-gradient(135deg, #1d1d35, #2d2d55);
             color: white;
             border: 1px solid #ff0055;
-            padding: 10px 15px;
-            border-radius: 6px;
+            padding: 11px 16px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.9rem;
             text-align: left;
             transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
-        .choice-btn:hover {
+        .choice-option:hover {
             background: linear-gradient(135deg, #ff0055, #cc0044);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.5);
         }
 
-        /* Menú Inicial */
+        /* Menú Principal de Configuración */
         #menu-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5, 5, 10, 0.98);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(4, 4, 10, 0.98);
             z-index: 100;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 10px;
-            text-align: center;
+            padding: 20px;
             overflow-y: auto;
         }
 
-        .menu-section {
+        .menu-wrapper {
             max-width: 800px;
             width: 100%;
-            margin-bottom: 15px;
+            margin: auto;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
         }
 
         .menu-title {
             color: #ff0055;
             font-size: 1.1rem;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             border-bottom: 1px solid #333;
-            padding-bottom: 4px;
-            text-align: left;
+            padding-bottom: 5px;
             font-weight: bold;
         }
 
-        .grid-options {
+        .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 8px;
-            margin-top: 5px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
         }
 
-        .card {
-            background: #16162c;
+        .menu-card {
+            background: #141426;
             border: 2px solid #333;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             text-align: center;
+            transition: all 0.2s ease;
         }
-        .card.selected {
+        .menu-card:hover {
+            border-color: #ff0055;
+            background: #1e1e38;
+        }
+        .menu-card.selected {
             border-color: #ff0055 !important;
-            background: #2a1b3d !important;
-            box-shadow: 0 0 10px rgba(255,0,85,0.6);
+            background: #2a1538 !important;
+            box-shadow: 0 0 15px rgba(255,0,85,0.5);
         }
 
-        .upload-card {
-            background: linear-gradient(135deg, #2a1b3d, #4a154b);
+        .upload-box {
+            background: linear-gradient(135deg, #2a1538, #4a1238);
             border: 2px dashed #ff0055;
         }
         #file-input { display: none; }
 
-        .start-btn {
+        .main-start-btn {
             background: linear-gradient(135deg, #ff0055, #990033);
             color: white;
             border: none;
-            padding: 12px 35px;
-            font-size: 1.1rem;
+            padding: 15px 40px;
+            font-size: 1.15rem;
             font-weight: bold;
-            border-radius: 25px;
+            border-radius: 30px;
             cursor: pointer;
-            margin: 15px 0 30px 0;
-            box-shadow: 0 5px 20px rgba(255,0,85,0.6);
+            display: block;
+            margin: 20px auto 40px auto;
+            box-shadow: 0 5px 25px rgba(255,0,85,0.6);
+            transition: transform 0.2s;
         }
+        .main-start-btn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
 
+    <!-- MENÚ PRINCIPAL TIPO LUSTFIELD -->
     <div id="menu-overlay">
-        <h1 style="color: #ff0055; font-size: 1.6rem; margin-bottom: 5px;">MULTIVERSO +18</h1>
-        <p style="color: #bbb; max-width: 600px; font-size: 0.85rem; margin-bottom: 15px;">Selecciona tu estilo visual y la trama para comenzar.</p>
+        <h1 style="color: #ff0055; font-size: 1.8rem; margin-bottom: 5px; text-align: center;">LUST MULTIVERSE</h1>
+        <p style="color: #aaa; text-align: center; font-size: 0.85rem; margin-bottom: 25px;">Selecciona la personalización visual y el escenario de novela interactiva.</p>
         
-        <div class="menu-section">
-            <div class="menu-title">1. Estilo Visual del Personaje</div>
-            <div class="grid-options">
-                <label class="card upload-card" for="file-input" id="card-photo">
-                    <span style="color: #ff77aa; font-weight: bold; font-size: 0.8rem;">Subir Foto</span>
-                </label>
-                <input type="file" id="file-input" accept="image/*" onchange="loadCustomImage(event)">
+        <div class="menu-wrapper">
+            <!-- 1. Estilo Visual -->
+            <div class="menu-section">
+                <div class="menu-title">1. Estilo Visual del Personaje</div>
+                <div class="options-grid">
+                    <label class="menu-card upload-box" for="file-input" id="card-photo">
+                        <span style="color:#ff77aa; font-weight:bold; font-size:0.85rem;">Subir Foto</span>
+                    </label>
+                    <input type="file" id="file-input" accept="image/*" onchange="loadCustomImage(event)">
 
-                <div class="card char-card selected" id="card-realista" onclick="selectCharacter('Realista', 0x334155, 'card-realista')">
-                    <span style="font-size:0.8rem;">Realista</span>
-                </div>
-                <div class="card char-card" id="card-manga" onclick="selectCharacter('Manga', 0xff0055, 'card-manga')">
-                    <span style="font-size:0.8rem;">Manga</span>
-                </div>
-                <div class="card char-card" id="card-simpson" onclick="selectCharacter('Simpson', 0xd97706, 'card-simpson')">
-                    <span style="font-size:0.8rem;">Simpson</span>
-                </div>
-                <div class="card char-card" id="card-looney" onclick="selectCharacter('Looney Tunes', 0x94a3b8, 'card-looney')">
-                    <span style="font-size:0.8rem;">Looney Tunes</span>
-                </div>
-                <div class="card char-card" id="card-family" onclick="selectCharacter('Padre de Familia', 0x16a34a, 'card-family')">
-                    <span style="font-size:0.8rem;">Padre de Familia</span>
-                </div>
-                <div class="card char-card" id="card-demon" onclick="selectCharacter('Demon Slayer', 0x0284c7, 'card-demon')">
-                    <span style="font-size:0.8rem;">Demon Slayer</span>
+                    <div class="menu-card char-card selected" id="card-realista" onclick="selectCharacter('Realista', 0x334155, 'card-realista')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Realista</span>
+                    </div>
+                    <div class="menu-card char-card" id="card-manga" onclick="selectCharacter('Manga', 0xff0055, 'card-manga')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Manga</span>
+                    </div>
+                    <div class="menu-card char-card" id="card-simpson" onclick="selectCharacter('Simpson', 0xd97706, 'card-simpson')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Simpson</span>
+                    </div>
+                    <div class="menu-card char-card" id="card-looney" onclick="selectCharacter('Looney Tunes', 0x94a3b8, 'card-looney')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Looney Tunes</span>
+                    </div>
+                    <div class="menu-card char-card" id="card-family" onclick="selectCharacter('Padre de Familia', 0x16a34a, 'card-family')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Padre de Familia</span>
+                    </div>
+                    <div class="menu-card char-card" id="card-demon" onclick="selectCharacter('Demon Slayer', 0x0284c7, 'card-demon')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Demon Slayer</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="menu-section">
-            <div class="menu-title">2. Tropo / Historia</div>
-            <div class="grid-options">
-                <div class="card trope-card selected" id="trope-jefe" onclick="selectTrope('Jefe y Empleada', 'Oficina nocturna', 'trope-jefe')">
-                    <span style="font-size:0.8rem;">Jefe / Empleada</span>
-                </div>
-                <div class="card trope-card" id="trope-cunado" onclick="selectTrope('Cuñado y Cuñada', 'Tarde a solas', 'trope-cunado')">
-                    <span style="font-size:0.8rem;">Cuñado / Cuñada</span>
-                </div>
-                <div class="card trope-card" id="trope-madrastra" onclick="selectTrope('Madrastra', 'Conversación íntima', 'trope-madrastra')">
-                    <span style="font-size:0.8rem;">Madrastra</span>
-                </div>
-                <div class="card trope-card" id="trope-vecina" onclick="selectTrope('La Vecina', 'Visita inesperada', 'trope-vecina')">
-                    <span style="font-size:0.8rem;">La Vecina</span>
-                </div>
-                <div class="card trope-card" id="trope-camarera" onclick="selectTrope('Camarera', 'Cierre del local', 'trope-camarera')">
-                    <span style="font-size:0.8rem;">Camarera</span>
-                </div>
-                <div class="card trope-card" id="trope-masajista" onclick="selectTrope('Masajista', 'Gabinete privado', 'trope-masajista')">
-                    <span style="font-size:0.8rem;">Masajista</span>
+            <!-- 2. Tropo / Historia -->
+            <div class="menu-section">
+                <div class="menu-title">2. Escenario / Tropo Adulto</div>
+                <div class="options-grid">
+                    <div class="menu-card trope-card selected" id="trope-jefe" onclick="selectTrope('Jefe y Empleada', 'Oficina nocturna', 'trope-jefe')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Jefe / Empleada</span>
+                    </div>
+                    <div class="menu-card trope-card" id="trope-cunado" onclick="selectTrope('Cuñado y Cuñada', 'Tarde a solas', 'trope-cunado')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Cuñado / Cuñada</span>
+                    </div>
+                    <div class="menu-card trope-card" id="trope-madrastra" onclick="selectTrope('Madrastra', 'Conversación íntima', 'trope-madrastra')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Madrastra</span>
+                    </div>
+                    <div class="menu-card trope-card" id="trope-vecina" onclick="selectTrope('La Vecina', 'Visita inesperada', 'trope-vecina')">
+                        <span style="font-size:0.85rem; font-weight:bold;">La Vecina</span>
+                    </div>
+                    <div class="menu-card trope-card" id="trope-camarera" onclick="selectTrope('Camarera', 'Cierre del local', 'trope-camarera')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Camarera</span>
+                    </div>
+                    <div class="menu-card trope-card" id="trope-masajista" onclick="selectTrope('Masajista', 'Gabinete privado', 'trope-masajista')">
+                        <span style="font-size:0.85rem; font-weight:bold;">Masajista</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <button class="start-btn" onclick="initGameSession()">INICIAR JUEGO</button>
+            <button class="main-start-btn" onclick="initGameSession()">JUGAR AHORA</button>
+        </div>
     </div>
 
+    <!-- CONTENEDOR 3D -->
     <div id="canvas-container"></div>
 
+    <!-- HUD DE JUEGO PRINCIPAL -->
     <div class="ui-layer" id="game-ui" style="display: none;">
         <div class="top-hud">
-            <div>
-                <span id="hud-char-title" style="font-weight: bold; color: #ff0055; font-size: 0.85rem;">Personaje</span>
-                <div style="font-size: 0.7rem; color: #aaa;" id="hud-trope-title">Tropo</div>
-                <div class="toys-panel">
-                    <button class="toy-btn" onclick="applyToy('Vibrador')"> vibrador</button>
-                    <button class="toy-btn" onclick="applyToy('Esposas')"> esposas</button>
-                    <button class="toy-btn" onclick="applyToy('Aceite')"> aceite</button>
-                    <button class="toy-btn" onclick="applyToy('Varita')"> varita</button>
-                </div>
+            <div class="stat-group">
+                <span id="hud-char-title" style="font-weight: bold; color: #ff3399; font-size: 0.9rem;">Personaje</span>
+                <span id="hud-trope-title" style="font-size: 0.75rem; color: #aaa;">Tropo</span>
             </div>
-            <div>
-                <div style="font-size: 0.75rem; margin-bottom: 2px; text-align: right;">Pasión</div>
-                <div class="meter-container">
-                    <div id="tension-bar"></div>
+            <div class="stat-group" style="align-items: flex-end;">
+                <span style="font-size: 0.75rem; color: #bbb;">Nivel de Afecto / Pasión</span>
+                <div class="meter-bar-container">
+                    <div id="affection-bar"></div>
                 </div>
             </div>
         </div>
 
-        <div class="dialog-box">
+        <!-- Panel Lateral de Juguetes / Accesorios Eróticos -->
+        <div class="side-panel">
+            <button class="action-btn" onclick="useAccessory('Vibrador')"> Vibrador</button>
+            <button class="action-btn" onclick="useAccessory('Esposas')"> Esposas</button>
+            <button class="action-btn" onclick="useAccessory('Aceite Cálido')"> Aceite</button>
+            <button class="action-btn" onclick="useAccessory('Varita Mágica')"> Varita Mágica</button>
+        </div>
+
+        <div class="dialog-container">
             <div id="speaker-name">Nombre</div>
-            <div id="dialog-text">Cargando...</div>
-            <div class="choices-container" id="choices-box"></div>
+            <div id="dialog-text">Cargando texto...</div>
+            <div class="choices-box" id="choices-box"></div>
         </div>
     </div>
 
@@ -309,9 +338,9 @@
         let selStyle = 'Realista', selColor = 0x334155;
         let selTropeName = 'Jefe y Empleada', selTropeDesc = 'Oficina nocturna';
         let customTextureURL = null;
-        let tensionLevel = 0;
+        let affectionLevel = 10;
         let currentNode = 'start';
-        let activeToy = '';
+        let activeAccessory = '';
 
         function selectCharacter(style, color, elementId) {
             selStyle = style;
@@ -344,77 +373,78 @@
             }
         }
 
-        const storyData = {
+        // ÁRBOL DE DECISIONES DE LA NOVELA INTERACTIVA
+        const storyTree = {
             start: {
                 speaker: () => selTropeName,
-                text: () => `Situación: ${selTropeDesc}. Te mira fijamente con una sonrisa sugerente y se acerca lentamente. ¿Qué deseas hacer?`,
+                text: () => `Situación (${selTropeDesc}): Te mira fijamente con una sonrisa sugerente mientras se cruza de brazos lentamente. "¿Qué se supone que estás haciendo tan tarde por aquí?", pregunta con tono cómplice.`,
                 choices: [
-                    { text: "Acercarte y acariciar su rostro suavemente.", next: "caricia", tension: 25 },
-                    { text: "Susurrarle algo atrevido al oído.", next: "susurro", tension: 40 },
-                    { text: "Tomarle de la cintura con firmeza.", next: "cintura", tension: 55 }
+                    { text: "Acercarme despacio y acariciar su mejilla.", next: "branch_touch", aff: 15 },
+                    { text: "Decirle algo atrevido y directo al oído.", next: "branch_whisper", aff: 25 },
+                    { text: "Tomarle de la cintura y bloquear su salida.", next: "branch_grip", aff: 35 }
                 ]
             },
-            caricia: {
+            branch_touch: {
                 speaker: () => selTropeName,
-                text: "Cierra los ojos disfrutando del contacto, arqueando ligeramente el cuerpo con respiración agitada.",
+                text: "Cierra los ojos un instante disfrutando del tacto, arqueando ligeramente el cuerpo hacia ti con una respiración más profunda.",
                 choices: [
-                    { text: "Deslizar tus manos hacia su espalda.", next: "apasionado", tension: 35 },
-                    { text: "Dar un beso lento en su cuello.", next: "cuello", tension: 50 }
+                    { text: "Deslizar mis manos lentamente hacia su espalda.", next: "branch_deep", aff: 25 },
+                    { text: "Dar un beso suave y prolongado en su cuello.", next: "branch_neck", aff: 40 }
                 ]
             },
-            susurro: {
+            branch_whisper: {
                 speaker: () => selTropeName,
-                text: "Se le escapa una ligera risa nerviosa seguida de un suspiro profundo y una mirada intensa.",
+                text: "Se le escapa una risa nerviosa seguida de un suspiro. Su mirada cambia por completo, volviéndose mucho más intensa y atrevida.",
                 choices: [
-                    { text: "Morder suavemente su lóbulo.", next: "apasionado", tension: 40 },
-                    { text: "Empujarle contra la pared.", next: "pared", tension: 60 }
+                    { text: "Morder suavemente su lóbulo y tirar de él.", next: "branch_deep", aff: 35 },
+                    { text: "Empujarle con suavidad contra la pared.", next: "branch_wall", aff: 50 }
                 ]
             },
-            cintura: {
+            branch_grip: {
                 speaker: () => selTropeName,
-                text: "Un escalofrío recorre su cuerpo ante el agarre, sosteniéndose de tus hombros con fuerza.",
+                text: "Un escalofrío recorre su cuerpo ante el agarre repentino. Te sostiene de los hombros con fuerza mientras la tensión en la habitación se dispara.",
                 choices: [
-                    { text: "Unir vuestros labios en un beso apasionado.", next: "climax_fase1", tension: 70 },
-                    { text: "Llevarle hacia la cama.", next: "climax_fase1", tension: 85 }
+                    { text: "Unir vuestros labios en un beso apasionado e interminable.", next: "climax_scene", aff: 50 },
+                    { text: "Cargarle en brazos y llevarle hacia el sofá.", next: "climax_scene", aff: 65 }
                 ]
             },
-            cuello: {
+            branch_deep: {
                 speaker: () => selTropeName,
-                text: "Tus labios rozan su piel provocando un gemido ahogado mientras se aferra a tu ropa.",
+                text: "La distancia entre ambos desaparece por completo. El ambiente se vuelve sumamente cálido y cercano.",
                 choices: [
-                    { text: "Elevar la intensidad al máximo.", next: "climax_fase1", tension: 80 }
+                    { text: "Continuar explorando cada rincón con total libertad.", next: "climax_scene", aff: 40 }
                 ]
             },
-            apasionado: {
+            branch_neck: {
                 speaker: () => selTropeName,
-                text: "La distancia desaparece por completo y el ambiente se vuelve sumamente cálido.",
+                text: "Tus labios rozan su piel sensible, provocando que deje escapar un gemido ahogado mientras se aferra firmemente a tu ropa.",
                 choices: [
-                    { text: "Continuar explorando sin censura.", next: "climax_fase1", tension: 90 }
+                    { text: "Pasar a la fase íntima principal sin censura.", next: "climax_scene", aff: 45 }
                 ]
             },
-            pared: {
+            branch_wall: {
                 speaker: () => selTropeName,
-                text: "Queda contra la pared respirando agitadamente y pidiendo más.",
+                text: "Queda contra la pared, respirando de forma agitada y pidiendo más acción con la mirada.",
                 choices: [
-                    { text: "Desatar la pasión por completo.", next: "climax_fase1", tension: 95 }
+                    { text: "Elevar la temperatura al máximo nivel.", next: "climax_scene", aff: 55 }
                 ]
             },
-            climax_fase1: {
+            climax_scene: {
                 speaker: () => "NARRADOR (+18)",
-                text: () => `🔥 [CLÍMAX ALCANZADO] Tropo: ${selTropeName} | Estilo: ${selStyle}. ${activeToy ? 'Accesorio activo: ' + activeToy + '.' : 'Has completado la secuencia inicial con éxito.'}`,
+                text: () => `🔥 [ESCENA ÍNTIMA DESBLOQUEADA] Tropo: ${selTropeName} | Estilo: ${selStyle}. ${activeAccessory ? 'Accesorio empleado: ' + activeAccessory + '.' : 'Has alcanzado el punto álgido de la interacción con éxito total.'}`,
                 choices: [
-                    { text: "🔄 Reiniciar experiencia", next: "start", tension: 0 }
+                    { text: "🔄 Reiniciar historia con otra combinación", next: "start", aff: -100 }
                 ]
             }
         };
 
-        function applyToy(toyName) {
-            activeToy = toyName;
-            tensionLevel = Math.min(100, tensionLevel + 30);
+        function useAccessory(accName) {
+            activeAccessory = accName;
+            affectionLevel = Math.min(100, affectionLevel + 30);
             updateHUD();
             updateNode();
             if (characterGroup) {
-                characterGroup.scale.set(1.2, 0.8, 1.2);
+                characterGroup.scale.set(1.25, 0.75, 1.25);
                 setTimeout(() => characterGroup.scale.set(1, 1, 1), 250);
             }
         }
@@ -425,9 +455,9 @@
             document.getElementById('hud-char-title').innerText = `Estilo: ${selStyle}`;
             document.getElementById('hud-trope-title').innerText = `Tropo: ${selTropeName}`;
 
-            tensionLevel = 0;
+            affectionLevel = 10;
             currentNode = 'start';
-            activeToy = '';
+            activeAccessory = '';
 
             init3D();
             updateNode();
@@ -438,64 +468,11 @@
             container.innerHTML = '';
 
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0e0712);
-            scene.fog = new THREE.FogExp2(0x0e0712, 0.04);
+            scene.background = new THREE.Color(0x0a050f);
+            scene.fog = new THREE.FogExp2(0x0a050f, 0.04);
 
             camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 1.5, 6);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            container.appendChild(renderer.domElement);
-
-            const ambient = new THREE.AmbientLight(0xffb6c1, 0.7);
-            scene.add(ambient);
-
-            const pointLight = new THREE.PointLight(0xff0055, 2.0, 10);
-            pointLight.position.set(2, 3, 2);
-            scene.add(pointLight);
-
-            characterGroup = new THREE.Group();
-            buildCharacterMesh();
-            scene.add(characterGroup);
-
-            renderer.domElement.addEventListener('pointerdown', () => {
-                tensionLevel = Math.min(100, tensionLevel + 10);
-                updateHUD();
-                if (characterGroup) {
-                    characterGroup.scale.set(1.1, 0.9, 1.1);
-                    setTimeout(() => characterGroup.scale.set(1, 1, 1), 150);
-                }
-            });
-
-            animate3D();
-        }
-
-        function buildCharacterMesh() {
-            let headMat;
-            if (customTextureURL && selStyle === 'Personalizado') {
-                const textureLoader = new THREE.TextureLoader();
-                const userTexture = textureLoader.load(customTextureURL);
-                headMat = new THREE.MeshStandardMaterial({ map: userTexture, roughness: 0.4 });
-            } else {
-                headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.4 });
-            }
-
-            const mat = new THREE.MeshStandardMaterial({ color: selColor, roughness: 0.3 });
-
-            if (selStyle === 'Realista' || selStyle === 'Personalizado') {
-                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.2), mat);
-                body.position.y = 0.6;
-                const head = new THREE.Mesh(selStyle === 'Personalizado' ? new THREE.BoxGeometry(0.6, 0.7, 0.5) : new THREE.SphereGeometry(0.3, 16, 16), headMat);
-                head.position.y = 1.4;
-                characterGroup.add(body, head);
-            } else if (selStyle === 'Manga') {
-                const body = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1.1, 16), mat);
-                body.position.y = 0.55;
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16), headMat);
-                head.position.y = 1.35;
-                characterGroup.add(body, head);
-            } else if (selStyle === 'Simpson') {
-                const yellowSkin = new THREE.MeshStandardMaterial({ color: 0xffd90f });
-                c
+            renderer.setSize(window.innerWidth, windo
