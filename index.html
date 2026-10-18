@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiverso Visual Novel +18 - Versión Definitiva</title>
+    <title>Multiverso Visual Novel +18 - Edición Profesional</title>
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             overflow: hidden;
@@ -41,20 +42,20 @@
             justify-content: space-between;
             align-items: center;
             background: rgba(0, 0, 0, 0.75);
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 12px;
             pointer-events: auto;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(6px);
             border: 1px solid rgba(255,255,255,0.1);
         }
 
         .meter-container {
             width: 180px;
-            background: #333;
+            background: #222;
             height: 14px;
             border-radius: 7px;
             overflow: hidden;
-            border: 1px solid #555;
+            border: 1px solid #444;
         }
         #tension-bar {
             width: 0%;
@@ -63,22 +64,21 @@
             transition: width 0.4s ease;
         }
 
-        /* Menú de Juguetes / Accesorios Sexuales */
         .toys-panel {
             display: flex;
             gap: 8px;
             pointer-events: auto;
-            margin-top: 5px;
+            margin-top: 6px;
             flex-wrap: wrap;
         }
         .toy-btn {
             background: #2a1b3d;
             border: 1px solid #ff0055;
             color: #ffb6c1;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             transition: all 0.2s ease;
         }
         .toy-btn:hover {
@@ -88,7 +88,7 @@
         }
 
         .dialog-box {
-            background: rgba(10, 10, 20, 0.9);
+            background: rgba(10, 10, 20, 0.92);
             border: 2px solid #ff0055;
             border-radius: 15px;
             padding: 20px;
@@ -138,20 +138,20 @@
             box-shadow: 0 6px 15px rgba(255,0,85,0.5);
         }
 
-        /* Menú inicial */
+        /* Menú de Configuración Inicial */
         #menu-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 5, 10, 0.97);
+            background: rgba(5, 5, 10, 0.98);
             z-index: 100;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
             overflow-y: auto;
         }
@@ -164,18 +164,19 @@
 
         .menu-title {
             color: #ff0055;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             margin-bottom: 10px;
             border-bottom: 1px solid #333;
             padding-bottom: 5px;
             text-align: left;
+            font-weight: bold;
         }
 
-        .char-grid, .scenario-grid {
+        .grid-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-top: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
         }
 
         .card {
@@ -184,19 +185,23 @@
             border-radius: 10px;
             padding: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
         .card:hover {
             border-color: #ff0055;
-            transform: scale(1.03);
             background: #202040;
         }
 
         .card.selected {
             border-color: #ff0055 !important;
             background: #2a1b3d !important;
-            box-shadow: 0 0 15px rgba(255,0,85,0.6);
+            box-shadow: 0 0 12px rgba(255,0,85,0.5);
         }
 
         .upload-card {
@@ -210,23 +215,23 @@
             background: linear-gradient(135deg, #ff0055, #990033);
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 15px 45px;
             font-size: 1.2rem;
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
-            margin-top: 15px;
+            margin: 15px 0 30px 0;
             box-shadow: 0 5px 20px rgba(255,0,85,0.6);
             transition: transform 0.2s;
         }
-        .start-btn:hover { transform: scale(1.08); }
+        .start-btn:hover { transform: scale(1.06); }
 
         .instruction-hint {
             position: absolute;
             top: 75px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.75);
             padding: 6px 15px;
             border-radius: 20px;
             font-size: 0.8rem;
@@ -238,61 +243,75 @@
 </head>
 <body>
 
-    <!-- MENÚ DE CONFIGURACIÓN INICIAL -->
+    <!-- MENÚ DE SELECCIÓN INTEGRAL -->
     <div id="menu-overlay">
-        <h1 style="color: #ff0055; font-size: 2rem; margin-bottom: 5px;">MULTIVERSO +18: EDICIÓN DEFINITIVA</h1>
-        <p style="color: #bbb; max-width: 650px; font-size: 0.95rem;">Selecciona el escenario, el personaje con su estilo correspondiente (o sube tu foto) y da comienzo a las interacciones íntimas.</p>
+        <h1 style="color: #ff0055; font-size: 2rem; margin-bottom: 5px;">MULTIVERSO +18: EDICIÓN PROFESIONAL</h1>
+        <p style="color: #bbb; max-width: 650px; font-size: 0.9rem; margin-bottom: 20px;">Configura tu experiencia combinando estilos visuales independientes con clásicos tropos cinematográficos adultos.</p>
         
+        <!-- 1. Estilo Visual -->
         <div class="menu-section">
-            <div class="menu-title">1. Selecciona el Escenario</div>
-            <div class="scenario-grid">
-                <div class="card scenario-card selected" id="scen-habitacion" onclick="selectScenario('habitacion', 'scen-habitacion')">
-                    <h4>Habitación Tenue</h4>
-                    <p style="font-size:0.75rem; color:#888;">Ambiente romántico</p>
+            <div class="menu-title">1. Elige el Estilo Visual del Personaje</div>
+            <div class="grid-options">
+                <label class="card upload-card" for="file-input" id="card-photo">
+                    <span style="color: #ff77aa; font-weight: bold; font-size: 0.9rem;">Subir Foto</span>
+                    <span style="font-size:0.65rem; color:#ddd; margin-top:3px;">Tu imagen local</span>
+                </label>
+                <input type="file" id="file-input" accept="image/*" onchange="loadCustomImage(event)">
+
+                <div class="card char-card selected" id="card-realista" onclick="selectCharacter('Realista', 0x334155, 'card-realista')">
+                    <strong>Realista</strong>
+                    <span style="font-size:0.65rem; color:#888;">Sobrio</span>
                 </div>
-                <div class="card scenario-card" id="scen-neon" onclick="selectScenario('neon', 'scen-neon')">
-                    <h4>Estudio Neón</h4>
-                    <p style="font-size:0.75rem; color:#888;">Luces cibernéticas</p>
+                <div class="card char-card" id="card-manga" onclick="selectCharacter('Manga', 0xff0055, 'card-manga')">
+                    <strong>Manga</strong>
+                    <span style="font-size:0.65rem; color:#888;">Anime</span>
                 </div>
-                <div class="card scenario-card" id="scen-minimalista" onclick="selectScenario('minimalista', 'scen-minimalista')">
-                    <h4>Minimalista</h4>
-                    <p style="font-size:0.75rem; color:#888;">Fondo limpio</p>
+                <div class="card char-card" id="card-simpson" onclick="selectCharacter('Simpson', 0xd97706, 'card-simpson')">
+                    <strong>Simpson</strong>
+                    <span style="font-size:0.65rem; color:#888;">Animado</span>
+                </div>
+                <div class="card char-card" id="card-looney" onclick="selectCharacter('Looney Tunes', 0x94a3b8, 'card-looney')">
+                    <strong>Looney Tunes</strong>
+                    <span style="font-size:0.65rem; color:#888;">Dinámico</span>
+                </div>
+                <div class="card char-card" id="card-family" onclick="selectCharacter('Padre de Familia', 0x16a34a, 'card-family')">
+                    <strong>Padre de Familia</strong>
+                    <span style="font-size:0.65rem; color:#888;">Corpulento</span>
+                </div>
+                <div class="card char-card" id="card-demon" onclick="selectCharacter('Demon Slayer', 0x0284c7, 'card-demon')">
+                    <strong>Demon Slayer</strong>
+                    <span style="font-size:0.65rem; color:#888;">Estético</span>
                 </div>
             </div>
         </div>
 
+        <!-- 2. Historia / Tropo Adulto -->
         <div class="menu-section">
-            <div class="menu-title">2. Selecciona el Personaje / Estilo</div>
-            <div class="char-grid">
-                <label class="card upload-card" for="file-input" id="card-photo">
-                    <h4 style="color: #ff77aa;">Subir Foto</h4>
-                    <p style="font-size:0.7rem; color:#ddd;">Usa tu imagen local</p>
-                </label>
-                <input type="file" id="file-input" accept="image/*" onchange="loadCustomImage(event)">
-
-                <div class="card char-card selected" id="card-realista" onclick="selectCharacter('Realista', 'John', 0x334155, 'card-realista')">
-                    <h4>Realista</h4>
-                    <p style="font-size:0.7rem; color:#888;">Estilo sobrio</p>
+            <div class="menu-title">2. Elige el Tropo / Escenario Narrativo</div>
+            <div class="grid-options">
+                <div class="card trope-card selected" id="trope-jefe" onclick="selectTrope('Jefe y Empleada', 'Oficina nocturna tras horas de trabajo', 'trope-jefe')">
+                    <strong>Jefe / Empleada</strong>
+                    <span style="font-size:0.65rem; color:#888;">Oficina</span>
                 </div>
-                <div class="card char-card" id="card-manga" onclick="selectCharacter('Manga', 'Kenshi', 0xff0055, 'card-manga')">
-                    <h4>Manga</h4>
-                    <p style="font-size:0.7rem; color:#888;">Anime estilizado</p>
+                <div class="card trope-card" id="trope-cunado" onclick="selectTrope('Cuñado y Cuñada', 'Tarde a solas en la sala de estar', 'trope-cunado')">
+                    <strong>Cuñado / Cuñada</strong>
+                    <span style="font-size:0.65rem; color:#888;">Casa</span>
                 </div>
-                <div class="card char-card" id="card-simpson" onclick="selectCharacter('Simpson', 'Homero', 0xd97706, 'card-simpson')">
-                    <h4>Simpson</h4>
-                    <p style="font-size:0.7rem; color:#888;">Clásico animado</p>
+                <div class="card trope-card" id="trope-madrastra" onclick="selectTrope('Madrastra / Padrastro', 'Conversación íntima y sugerente', 'trope-madrastra')">
+                    <strong>Madrastra</strong>
+                    <span style="font-size:0.65rem; color:#888;">Salón</span>
                 </div>
-                <div class="card char-card" id="card-looney" onclick="selectCharacter('Looney Tunes', 'Bugs', 0x94a3b8, 'card-looney')">
-                    <h4>Looney Tunes</h4>
-                    <p style="font-size:0.7rem; color:#888;">Dinámico</p>
+                <div class="card trope-card" id="trope-vecina" onclick="selectTrope('La Vecina', 'Visita inesperada pidiendo un favor', 'trope-vecina')">
+                    <strong>La Vecina</strong>
+                    <span style="font-size:0.65rem; color:#888;">Puerta</span>
                 </div>
-                <div class="card char-card" id="card-family" onclick="selectCharacter('Padre de Familia', 'Peter', 0x16a34a, 'card-family')">
-                    <h4>Padre de Familia</h4>
-                    <p style="font-size:0.7rem; color:#888;">Corpulento</p>
+                <div class="card trope-card" id="trope-camarera" onclick="selectTrope('Camarera y Cliente', 'Cierre del local y copas a solas', 'trope-camarera')">
+                    <strong>Camarera</strong>
+                    <span style="font-size:0.65rem; color:#888;">Bar</span>
                 </div>
-                <div class="card char-card" id="card-demon" onclick="selectCharacter('Demon Slayer', 'Tanjiro', 0x0284c7, 'card-demon')">
-                    <h4>Demon Slayer</h4>
-                    <p style="font-size:0.7rem; color:#888;">Acción estética</p>
+                <div class="card trope-card" id="trope-masajista" onclick="selectTrope('El/La Masajista', 'Gabinete privado y aceites cálidos', 'trope-masajista')">
+                    <strong>Masajista</strong>
+                    <span style="font-size:0.65rem; color:#888;">Camilla</span>
                 </div>
             </div>
         </div>
@@ -308,7 +327,7 @@
         <div class="top-hud">
             <div>
                 <span id="hud-char-title" style="font-weight: bold; color: #ff0055;">Personaje</span>
-                <div style="font-size: 0.75rem; color: #aaa;" id="hud-scenario-title">Escenario</div>
+                <div style="font-size: 0.75rem; color: #aaa;" id="hud-trope-title">Tropo</div>
                 <div class="toys-panel">
                     <button class="toy-btn" onclick="applyToy('Vibrador de Alta Frecuencia')"> vibrador</button>
                     <button class="toy-btn" onclick="applyToy('Esposas de Cuero')"> esposas</button>
@@ -324,7 +343,7 @@
             </div>
         </div>
 
-        <div class="instruction-hint">💡 Haz clic sobre el personaje 3D o usa los botones de juguetes y opciones para avanzar.</div>
+        <div class="instruction-hint">💡 Toca la pantalla o usa las opciones inferiores para avanzar en la historia.</div>
 
         <div class="dialog-box">
             <div id="speaker-name">Nombre</div>
@@ -337,31 +356,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         let scene, camera, renderer, characterGroup;
-        let selectedScenario = 'habitacion';
-        let selStyle = 'Realista', selName = 'John', selColor = 0x334155;
+        let selStyle = 'Realista', selColor = 0x334155;
+        let selTropeName = 'Jefe y Empleada', selTropeDesc = 'Oficina nocturna tras horas de trabajo';
         let customTextureURL = null;
         let tensionLevel = 0;
         let currentNode = 'start';
         let activeToy = '';
 
-        // --- SELECCIÓN DE ESCENARIOS ---
-        function selectScenario(scen, elementId) {
-            selectedScenario = scen;
-            document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById(elementId).classList.add('selected');
-        }
-
-        // --- SELECCIÓN DE ESTILOS Y PERSONAJES ---
-        function selectCharacter(style, name, color, elementId) {
+        // --- GESTIÓN DEL MENÚ ---
+        function selectCharacter(style, color, elementId) {
             selStyle = style;
-            selName = name;
             selColor = color;
             customTextureURL = null;
             document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('card-photo').classList.remove('selected');
             document.getElementById(elementId).classList.add('selected');
         }
 
-        // --- SUBIR FOTOGRAFÍA ---
+        function selectTrope(name, desc, elementId) {
+            selTropeName = name;
+            selTropeDesc = desc;
+            document.querySelectorAll('.trope-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(elementId).classList.add('selected');
+        }
+
         function loadCustomImage(event) {
             const file = event.target.files[0];
             if (file) {
@@ -369,7 +387,6 @@
                 reader.onload = function(e) {
                     customTextureURL = e.target.result;
                     selStyle = 'Personalizado';
-                    selName = 'Tu Personaje';
                     selColor = 0x666666;
                     document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
                     document.getElementById('card-photo').classList.add('selected');
@@ -378,11 +395,11 @@
             }
         }
 
-        // --- HISTORIAS Y RAMIFICACIONES +18 ---
+        // --- NARRATIVA ADAPTATIVA SEGÚN EL TROPO ---
         const storyData = {
             start: {
-                speaker: () => selName,
-                text: "Te mira fijamente con una sonrisa sugerente y se acerca lentamente a ti en la habitación tenue. ¿Qué deseas hacer?",
+                speaker: () => selTropeName,
+                text: () => `Contexto: ${selTropeDesc}. Te mira fijamente con una sonrisa sugerente y se acerca lentamente. ¿Qué deseas hacer?`,
                 choices: [
                     { text: "Acercarte y acariciar su rostro suavemente.", next: "caricia", tension: 20 },
                     { text: "Susurrarle algo atrevido al oído.", next: "susurro", tension: 35 },
@@ -390,7 +407,7 @@
                 ]
             },
             caricia: {
-                speaker: () => selName,
+                speaker: () => selTropeName,
                 text: "Cierra los ojos un instante disfrutando del contacto, arqueando ligeramente el cuerpo hacia ti con respiración agitada.",
                 choices: [
                     { text: "Deslizar tus manos hacia su espalda y profundizar el acercamiento.", next: "apasionado", tension: 40 },
@@ -398,66 +415,65 @@
                 ]
             },
             susurro: {
-                speaker: () => selName,
+                speaker: () => selTropeName,
                 text: "Se le escapa una ligera risa nerviosa seguida de un suspiro profundo. Su mirada cambia por completo, volviéndose más intensa.",
                 choices: [
                     { text: "Morder suavemente su lóbulo y tirar de él.", next: "apasionado", tension: 50 },
-                    { text: "Empujarle suavemente contra la pared de la habitación.", next: "pared", tension: 70 }
+                    { text: "Empujarle suavemente contra la pared.", next: "pared", tension: 70 }
                 ]
             },
             cintura: {
-                speaker: () => selName,
+                speaker: () => selTropeName,
                 text: "Un escalofrío recorre su cuerpo ante el agarre repentino. Te sostiene de los hombros con fuerza mientras aumenta la tensión.",
                 choices: [
                     { text: "Unir vuestros labios en un beso largo y apasionado.", next: "beso_intenso", tension: 75 },
-                    { text: "Cargarle en brazos hacia la cama.", next: "cama", tension: 90 }
+                    { text: "Llevarle hacia la superficie más cercana.", next: "cama", tension: 90 }
                 ]
             },
             cuello: {
-                speaker: () => selName,
+                speaker: () => selTropeName,
                 text: "Tus labios rozan su piel sensible, provocando que deje escapar un gemido ahogado mientras se aferra a tu ropa.",
                 choices: [
                     { text: "Elevar la intensidad y pasar a la fase íntima completa.", next: "climax_fase1", tension: 85 }
                 ]
             },
             apasionado: {
-                speaker: () => selName,
+                speaker: () => selTropeName,
                 text: "La distancia entre ambos desaparece por completo. El ambiente se vuelve sumamente cálido y cercano.",
                 choices: [
                     { text: "Continuar explorando cada rincón con total libertad.", next: "climax_fase1", tension: 80 }
                 ]
             },
             pared: {
-                speaker: () => selName,
+                speaker: () => selTropeName,
                 text: "Queda contra la pared, respirando agitadamente y pidiendo más con la mirada.",
                 choices: [
                     { text: "Elevar la temperatura sin contemplaciones.", next: "climax_fase1", tension: 95 }
                 ]
             },
             beso_intenso: {
-                speaker: () => selName,
+                speaker: () => selTropeName,
                 text: "Un beso profundo e interminable que eleva la pasión al máximo nivel del encuentro.",
                 choices: [
                     { text: "Llevar la situación hasta el clímax total.", next: "climax_fase1", tension: 100 }
                 ]
             },
             cama: {
-                speaker: () => selName,
-                text: "Te acompaña con total complicidad mientras caen juntos sobre la superficie suave, listos para la intimidad sin censura.",
+                speaker: () => selTropeName,
+                text: "Te acompaña con total complicidad mientras caen juntos, listos para la intimidad sin censura.",
                 choices: [
                     { text: "Desatar por completo la pasión final (+18).", next: "climax_fase1", tension: 100 }
                 ]
             },
             climax_fase1: {
                 speaker: () => "NARRADOR (+18)",
-                text: () => `🔥 [ESCENA ÍNTIMA ACTIVA] Estilo: ${selStyle} | Escenario: ${selectedScenario}. ${activeToy ? 'Juguete activo: ' + activeToy + '.' : 'Usa los botones superiores para añadir juguetes sexuales.'}`,
+                text: () => `🔥 [ESCENA ÍNTIMA ACTIVA] Tropo: ${selTropeName} | Estilo Visual: ${selStyle}. ${activeToy ? 'Juguete activo: ' + activeToy + '.' : 'Usa los botones superiores para añadir juguetes.'}`,
                 choices: [
                     { text: "🔄 Reiniciar y probar otra combinación", next: "start", tension: 0 }
                 ]
             }
         };
 
-        // --- SISTEMA DE JUGUETES ---
         window.applyToy = function(toyName) {
             activeToy = toyName;
             tensionLevel = Math.min(100, tensionLevel + 25);
@@ -470,176 +486,5 @@
             }
         }
 
-        // --- INICIAR JUEGO ---
         window.initGameSession = function() {
-            document.getElementById('menu-overlay').style.display = 'none';
-            document.getElementById('game-ui').style.display = 'flex';
-            document.getElementById('hud-char-title').innerText = `${selName} (${selStyle})`;
-            document.getElementById('hud-scenario-title').innerText = `Escenario: ${selectedScenario.toUpperCase()}`;
-
-            tensionLevel = 0;
-            currentNode = 'start';
-            activeToy = '';
-
-            init3D();
-            updateNode();
-        }
-
-        // --- MOTOR 3D Y ESCENARIOS ---
-        function init3D() {
-            const container = document.getElementById('canvas-container');
-            container.innerHTML = '';
-
-            scene = new THREE.Scene();
-
-            if (selectedScenario === 'habitacion') {
-                scene.background = new THREE.Color(0x120814);
-                scene.fog = new THREE.FogExp2(0x120814, 0.04);
-            } else if (selectedScenario === 'neon') {
-                scene.background = new THREE.Color(0x05051a);
-                scene.fog = new THREE.FogExp2(0x05051a, 0.03);
-            } else {
-                scene.background = new THREE.Color(0x1a1a1a);
-                scene.fog = new THREE.FogExp2(0x1a1a1a, 0.04);
-            }
-
-            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 1.5, 6);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            container.appendChild(renderer.domElement);
-
-            const ambient = new THREE.AmbientLight(selectedScenario === 'neon' ? 0x00ffff : 0xffb6c1, 0.6);
-            scene.add(ambient);
-
-            const pointLight = new THREE.PointLight(0xff0055, 2.0, 10);
-            pointLight.position.set(2, 3, 2);
-            scene.add(pointLight);
-
-            const pointLight2 = new THREE.PointLight(selectedScenario === 'neon' ? 0xff00ff : 0x00d2ff, 1.2, 10);
-            pointLight2.position.set(-2, 1, 2);
-            scene.add(pointLight2);
-
-            characterGroup = new THREE.Group();
-            buildCharacterMesh();
-            scene.add(characterGroup);
-
-            renderer.domElement.addEventListener('pointerdown', onPointerDown);
-            animate3D();
-        }
-
-        function buildCharacterMesh() {
-            let headMat;
-            if (customTextureURL && selStyle === 'Personalizado') {
-                const textureLoader = new THREE.TextureLoader();
-                const userTexture = textureLoader.load(customTextureURL);
-                headMat = new THREE.MeshStandardMaterial({ map: userTexture, roughness: 0.4 });
-            } else {
-                headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.4 });
-            }
-
-            const mat = new THREE.MeshStandardMaterial({ color: selColor, roughness: 0.3 });
-
-            if (selStyle === 'Realista' || selStyle === 'Personalizado') {
-                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.2), mat);
-                body.position.y = 0.6;
-                const head = new THREE.Mesh(selStyle === 'Personalizado' ? new THREE.BoxGeometry(0.6, 0.7, 0.5) : new THREE.SphereGeometry(0.3, 16, 16), headMat);
-                head.position.y = 1.4;
-                characterGroup.add(body, head);
-            } else if (selStyle === 'Manga') {
-                const body = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1.1, 16), mat);
-                body.position.y = 0.55;
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16), headMat);
-                head.position.y = 1.35;
-                characterGroup.add(body, head);
-            } else if (selStyle === 'Simpson') {
-                const yellowSkin = new THREE.MeshStandardMaterial({ color: 0xffd90f });
-                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.9), mat);
-                body.position.y = 0.45;
-                const head = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.8, 16), yellowSkin);
-                head.position.y = 1.3;
-                characterGroup.add(body, head);
-            } else if (selStyle === 'Looney Tunes') {
-                const body = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), mat);
-                body.position.y = 0.5;
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), mat);
-                head.position.y = 1.25;
-                characterGroup.add(body, head);
-            } else if (selStyle === 'Padre de Familia') {
-                const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 0.5), mat);
-                body.position.y = 0.5;
-                const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), headMat);
-                head.position.y = 1.2;
-                characterGroup.add(body, head);
-            } else if (selStyle === 'Demon Slayer') {
-                const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.4), mat);
-                body.position.y = 0.6;
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), headMat);
-                head.position.y = 1.4;
-                characterGroup.add(body, head);
-            }
-
-            characterGroup.position.y = -0.7;
-        }
-
-        let clock = new THREE.Clock();
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-            const elapsedTime = clock.getElapsedTime();
-            if (characterGroup) {
-                characterGroup.rotation.y = Math.sin(elapsedTime * 0.8) * 0.15;
-                characterGroup.position.y = -0.7 + Math.sin(elapsedTime * 1.5) * 0.03;
-            }
-            renderer.render(scene, camera);
-        }
-
-        function onPointerDown(event) {
-            tensionLevel = Math.min(100, tensionLevel + 12);
-            updateHUD();
-
-            if (characterGroup) {
-                characterGroup.scale.set(1.1, 0.9, 1.1);
-                setTimeout(() => characterGroup.scale.set(1, 1, 1), 200);
-            }
-        }
-
-        function updateNode() {
-            const node = storyData[currentNode];
-            if (!node) return;
-
-            document.getElementById('speaker-name').innerText = typeof node.speaker === 'function' ? node.speaker() : node.speaker;
-            document.getElementById('dialog-text').innerText = typeof node.text === 'function' ? node.text() : node.text;
-
-            const choicesBox = document.getElementById('choices-box');
-            choicesBox.innerHTML = '';
-
-            node.choices.forEach(choice => {
-                const btn = document.createElement('button');
-                btn.className = 'choice-btn';
-                btn.innerText = choice.text;
-                btn.onclick = () => {
-                    tensionLevel = Math.min(100, tensionLevel + choice.tension);
-                    currentNode = choice.next;
-                    updateHUD();
-                    updateNode();
-                };
-                choicesBox.appendChild(btn);
-            });
-        }
-
-        function updateHUD() {
-            document.getElementById('tension-bar').style.width = `${tensionLevel}%`;
-        }
-
-        window.addEventListener('resize', () => {
-            if (camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
-    </script>
-</body>
-</html>
+            document.getElementById('menu-overlay').style.d
