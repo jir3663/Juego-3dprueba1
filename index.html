@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiverso Visual Novel +18 - Edición Completa</title>
+    <title>Multiverso Visual Novel +18 - Versión Definitiva</title>
     <style>
         body {
             margin: 0;
@@ -40,7 +40,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             padding: 10px 20px;
             border-radius: 12px;
             pointer-events: auto;
@@ -138,14 +138,14 @@
             box-shadow: 0 6px 15px rgba(255,0,85,0.5);
         }
 
-        /* Menú inicial completo */
+        /* Menú inicial */
         #menu-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 5, 10, 0.96);
+            background: rgba(5, 5, 10, 0.97);
             z-index: 100;
             display: flex;
             flex-direction: column;
@@ -164,7 +164,7 @@
 
         .menu-title {
             color: #ff0055;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-bottom: 10px;
             border-bottom: 1px solid #333;
             padding-bottom: 5px;
@@ -187,11 +187,16 @@
             transition: all 0.3s ease;
         }
 
-        .card:hover, .card.selected {
+        .card:hover {
             border-color: #ff0055;
             transform: scale(1.03);
             background: #202040;
-            box-shadow: 0 0 15px rgba(255,0,85,0.4);
+        }
+
+        .card.selected {
+            border-color: #ff0055 !important;
+            background: #2a1b3d !important;
+            box-shadow: 0 0 15px rgba(255,0,85,0.6);
         }
 
         .upload-card {
@@ -210,7 +215,7 @@
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
             box-shadow: 0 5px 20px rgba(255,0,85,0.6);
             transition: transform 0.2s;
         }
@@ -233,7 +238,7 @@
 </head>
 <body>
 
-    <!-- MENÚ DE CONFIGURACIÓN INICIAL (PERSONAJES, ESCENARIOS Y FOTO) -->
+    <!-- MENÚ DE CONFIGURACIÓN INICIAL -->
     <div id="menu-overlay">
         <h1 style="color: #ff0055; font-size: 2rem; margin-bottom: 5px;">MULTIVERSO +18: EDICIÓN DEFINITIVA</h1>
         <p style="color: #bbb; max-width: 650px; font-size: 0.95rem;">Selecciona el escenario, el personaje con su estilo correspondiente (o sube tu foto) y da comienzo a las interacciones íntimas.</p>
@@ -241,17 +246,17 @@
         <div class="menu-section">
             <div class="menu-title">1. Selecciona el Escenario</div>
             <div class="scenario-grid">
-                <div class="card scenario-card selected" onclick="selectScenario('habitacion', this)">
+                <div class="card scenario-card selected" id="scen-habitacion" onclick="selectScenario('habitacion', 'scen-habitacion')">
                     <h4>Habitación Tenue</h4>
-                    <p style="font-size:0.75rem; color:#888;">Ambiente romántico y cálido</p>
+                    <p style="font-size:0.75rem; color:#888;">Ambiente romántico</p>
                 </div>
-                <div class="card scenario-card" onclick="selectScenario('neon', this)">
-                    <h4>Estudio Neón / Anime</h4>
-                    <p style="font-size:0.75rem; color:#888;">Luces cibernéticas intensas</p>
+                <div class="card scenario-card" id="scen-neon" onclick="selectScenario('neon', 'scen-neon')">
+                    <h4>Estudio Neón</h4>
+                    <p style="font-size:0.75rem; color:#888;">Luces cibernéticas</p>
                 </div>
-                <div class="card scenario-card" onclick="selectScenario('minimalista', this)">
-                    <h4>Espacio Minimalista</h4>
-                    <p style="font-size:0.75rem; color:#888;">Fondo estético y limpio</p>
+                <div class="card scenario-card" id="scen-minimalista" onclick="selectScenario('minimalista', 'scen-minimalista')">
+                    <h4>Minimalista</h4>
+                    <p style="font-size:0.75rem; color:#888;">Fondo limpio</p>
                 </div>
             </div>
         </div>
@@ -259,33 +264,33 @@
         <div class="menu-section">
             <div class="menu-title">2. Selecciona el Personaje / Estilo</div>
             <div class="char-grid">
-                <label class="card upload-card" for="file-input">
+                <label class="card upload-card" for="file-input" id="card-photo">
                     <h4 style="color: #ff77aa;">Subir Foto</h4>
                     <p style="font-size:0.7rem; color:#ddd;">Usa tu imagen local</p>
                 </label>
                 <input type="file" id="file-input" accept="image/*" onchange="loadCustomImage(event)">
 
-                <div class="card char-card selected" onclick="selectCharacter('Realista', 'John', 0x334155, this)">
+                <div class="card char-card selected" id="card-realista" onclick="selectCharacter('Realista', 'John', 0x334155, 'card-realista')">
                     <h4>Realista</h4>
                     <p style="font-size:0.7rem; color:#888;">Estilo sobrio</p>
                 </div>
-                <div class="card char-card" onclick="selectCharacter('Manga', 'Kenshi', 0xff0055, this)">
+                <div class="card char-card" id="card-manga" onclick="selectCharacter('Manga', 'Kenshi', 0xff0055, 'card-manga')">
                     <h4>Manga</h4>
                     <p style="font-size:0.7rem; color:#888;">Anime estilizado</p>
                 </div>
-                <div class="card char-card" onclick="selectCharacter('Simpson', 'Homero', 0xd97706, this)">
+                <div class="card char-card" id="card-simpson" onclick="selectCharacter('Simpson', 'Homero', 0xd97706, 'card-simpson')">
                     <h4>Simpson</h4>
                     <p style="font-size:0.7rem; color:#888;">Clásico animado</p>
                 </div>
-                <div class="card char-card" onclick="selectCharacter('Looney Tunes', 'Bugs', 0x94a3b8, this)">
+                <div class="card char-card" id="card-looney" onclick="selectCharacter('Looney Tunes', 'Bugs', 0x94a3b8, 'card-looney')">
                     <h4>Looney Tunes</h4>
                     <p style="font-size:0.7rem; color:#888;">Dinámico</p>
                 </div>
-                <div class="card char-card" onclick="selectCharacter('Padre de Familia', 'Peter', 0x16a34a, this)">
+                <div class="card char-card" id="card-family" onclick="selectCharacter('Padre de Familia', 'Peter', 0x16a34a, 'card-family')">
                     <h4>Padre de Familia</h4>
                     <p style="font-size:0.7rem; color:#888;">Corpulento</p>
                 </div>
-                <div class="card char-card" onclick="selectCharacter('Demon Slayer', 'Tanjiro', 0x0284c7, this)">
+                <div class="card char-card" id="card-demon" onclick="selectCharacter('Demon Slayer', 'Tanjiro', 0x0284c7, 'card-demon')">
                     <h4>Demon Slayer</h4>
                     <p style="font-size:0.7rem; color:#888;">Acción estética</p>
                 </div>
@@ -298,7 +303,7 @@
     <!-- ESCENARIO 3D -->
     <div id="canvas-container"></div>
 
-    <!-- INTERFAZ DE JUEGO + ACCESORIOS Y JUGUETES -->
+    <!-- INTERFAZ DE JUEGO -->
     <div class="ui-layer" id="game-ui" style="display: none;">
         <div class="top-hud">
             <div>
@@ -339,22 +344,24 @@
         let currentNode = 'start';
         let activeToy = '';
 
-        // --- SELECCIÓN EN MENÚ ---
-        function selectScenario(scen, el) {
+        // --- SELECCIÓN DE ESCENARIOS ---
+        function selectScenario(scen, elementId) {
             selectedScenario = scen;
             document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
+            document.getElementById(elementId).classList.add('selected');
         }
 
-        function selectCharacter(style, name, color, el) {
+        // --- SELECCIÓN DE ESTILOS Y PERSONAJES ---
+        function selectCharacter(style, name, color, elementId) {
             selStyle = style;
             selName = name;
             selColor = color;
             customTextureURL = null;
             document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
+            document.getElementById(elementId).classList.add('selected');
         }
 
+        // --- SUBIR FOTOGRAFÍA ---
         function loadCustomImage(event) {
             const file = event.target.files[0];
             if (file) {
@@ -365,12 +372,13 @@
                     selName = 'Tu Personaje';
                     selColor = 0x666666;
                     document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+                    document.getElementById('card-photo').classList.add('selected');
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        // --- HISTORIAS Y RAMIFICACIONES AMPLIADAS +18 ---
+        // --- HISTORIAS Y RAMIFICACIONES +18 ---
         const storyData = {
             start: {
                 speaker: () => selName,
@@ -442,7 +450,7 @@
             },
             climax_fase1: {
                 speaker: () => "NARRADOR (+18)",
-                text: () => `🔥 [ESCENA ÍNTIMA ACTIVA] Usando el estilo ${selStyle} en el escenario ${selectedScenario}. ${activeToy ? 'Has incorporado: ' + activeToy + '.' : 'Usa los botones de juguetes sexuales arriba para añadir más intensidad.'}`,
+                text: () => `🔥 [ESCENA ÍNTIMA ACTIVA] Estilo: ${selStyle} | Escenario: ${selectedScenario}. ${activeToy ? 'Juguete activo: ' + activeToy + '.' : 'Usa los botones superiores para añadir juguetes sexuales.'}`,
                 choices: [
                     { text: "🔄 Reiniciar y probar otra combinación", next: "start", tension: 0 }
                 ]
@@ -456,7 +464,6 @@
             updateHUD();
             updateNode();
             
-            // Animación de reacción al juguete
             if (characterGroup) {
                 characterGroup.scale.set(1.2, 0.8, 1.2);
                 setTimeout(() => characterGroup.scale.set(1, 1, 1), 300);
@@ -485,7 +492,6 @@
 
             scene = new THREE.Scene();
 
-            // Configurar colores según el escenario elegido
             if (selectedScenario === 'habitacion') {
                 scene.background = new THREE.Color(0x120814);
                 scene.fog = new THREE.FogExp2(0x120814, 0.04);
@@ -505,5 +511,135 @@
             renderer.shadowMap.enabled = true;
             container.appendChild(renderer.domElement);
 
-            // Iluminación dinámica
-            const ambient = new THR
+            const ambient = new THREE.AmbientLight(selectedScenario === 'neon' ? 0x00ffff : 0xffb6c1, 0.6);
+            scene.add(ambient);
+
+            const pointLight = new THREE.PointLight(0xff0055, 2.0, 10);
+            pointLight.position.set(2, 3, 2);
+            scene.add(pointLight);
+
+            const pointLight2 = new THREE.PointLight(selectedScenario === 'neon' ? 0xff00ff : 0x00d2ff, 1.2, 10);
+            pointLight2.position.set(-2, 1, 2);
+            scene.add(pointLight2);
+
+            characterGroup = new THREE.Group();
+            buildCharacterMesh();
+            scene.add(characterGroup);
+
+            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+            animate3D();
+        }
+
+        function buildCharacterMesh() {
+            let headMat;
+            if (customTextureURL && selStyle === 'Personalizado') {
+                const textureLoader = new THREE.TextureLoader();
+                const userTexture = textureLoader.load(customTextureURL);
+                headMat = new THREE.MeshStandardMaterial({ map: userTexture, roughness: 0.4 });
+            } else {
+                headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.4 });
+            }
+
+            const mat = new THREE.MeshStandardMaterial({ color: selColor, roughness: 0.3 });
+
+            if (selStyle === 'Realista' || selStyle === 'Personalizado') {
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.2), mat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(selStyle === 'Personalizado' ? new THREE.BoxGeometry(0.6, 0.7, 0.5) : new THREE.SphereGeometry(0.3, 16, 16), headMat);
+                head.position.y = 1.4;
+                characterGroup.add(body, head);
+            } else if (selStyle === 'Manga') {
+                const body = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1.1, 16), mat);
+                body.position.y = 0.55;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16), headMat);
+                head.position.y = 1.35;
+                characterGroup.add(body, head);
+            } else if (selStyle === 'Simpson') {
+                const yellowSkin = new THREE.MeshStandardMaterial({ color: 0xffd90f });
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.9), mat);
+                body.position.y = 0.45;
+                const head = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.8, 16), yellowSkin);
+                head.position.y = 1.3;
+                characterGroup.add(body, head);
+            } else if (selStyle === 'Looney Tunes') {
+                const body = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), mat);
+                body.position.y = 0.5;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), mat);
+                head.position.y = 1.25;
+                characterGroup.add(body, head);
+            } else if (selStyle === 'Padre de Familia') {
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 0.5), mat);
+                body.position.y = 0.5;
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), headMat);
+                head.position.y = 1.2;
+                characterGroup.add(body, head);
+            } else if (selStyle === 'Demon Slayer') {
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.4), mat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), headMat);
+                head.position.y = 1.4;
+                characterGroup.add(body, head);
+            }
+
+            characterGroup.position.y = -0.7;
+        }
+
+        let clock = new THREE.Clock();
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            const elapsedTime = clock.getElapsedTime();
+            if (characterGroup) {
+                characterGroup.rotation.y = Math.sin(elapsedTime * 0.8) * 0.15;
+                characterGroup.position.y = -0.7 + Math.sin(elapsedTime * 1.5) * 0.03;
+            }
+            renderer.render(scene, camera);
+        }
+
+        function onPointerDown(event) {
+            tensionLevel = Math.min(100, tensionLevel + 12);
+            updateHUD();
+
+            if (characterGroup) {
+                characterGroup.scale.set(1.1, 0.9, 1.1);
+                setTimeout(() => characterGroup.scale.set(1, 1, 1), 200);
+            }
+        }
+
+        function updateNode() {
+            const node = storyData[currentNode];
+            if (!node) return;
+
+            document.getElementById('speaker-name').innerText = typeof node.speaker === 'function' ? node.speaker() : node.speaker;
+            document.getElementById('dialog-text').innerText = typeof node.text === 'function' ? node.text() : node.text;
+
+            const choicesBox = document.getElementById('choices-box');
+            choicesBox.innerHTML = '';
+
+            node.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerText = choice.text;
+                btn.onclick = () => {
+                    tensionLevel = Math.min(100, tensionLevel + choice.tension);
+                    currentNode = choice.next;
+                    updateHUD();
+                    updateNode();
+                };
+                choicesBox.appendChild(btn);
+            });
+        }
+
+        function updateHUD() {
+            document.getElementById('tension-bar').style.width = `${tensionLevel}%`;
+        }
+
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+    </script>
+</body>
+</html>
