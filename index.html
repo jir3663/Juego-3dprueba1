@@ -39,7 +39,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(15, 15, 25, 0.9);
+            background: rgba(15, 15, 25, 0.95);
             padding: 8px 12px;
             border-radius: 10px;
             pointer-events: auto;
@@ -55,7 +55,7 @@
             border: 1px solid #444;
         }
         #passion-fill {
-            width: 10%; height: 100%;
+            width: 15%; height: 100%;
             background: linear-gradient(90deg, #ff0055, #ffcc00);
             transition: width 0.3s ease;
         }
@@ -206,7 +206,7 @@
     <!-- MENÚ PRINCIPAL -->
     <div id="main-menu">
         <h1 style="color: #ff0055; font-size: 1.5rem; margin: 10px 0 5px 0; text-align: center;">LUST MULTIVERSE</h1>
-        <p style="color: #88; font-size: 0.8rem; text-align: center; margin-bottom: 15px;">Selecciona estilo y tropo para jugar</p>
+        <p style="color: #888; font-size: 0.8rem; text-align: center; margin-bottom: 15px;">Selecciona estilo y tropo para jugar</p>
         
         <div class="menu-container">
             <!-- Estilo Visual -->
@@ -286,7 +286,7 @@
             currentStyle = style;
             currentColor = color;
             customPhoto = null;
-            document.querySelectorAll('.char-item, .card-item').forEach(el => {
+            document.querySelectorAll('.card-item').forEach(el => {
                 if(!el.classList.contains('upload-card')) el.classList.remove('active');
             });
             document.getElementById(id).classList.add('active');
@@ -296,7 +296,7 @@
         function setTrope(trope, desc, id) {
             currentTrope = trope;
             currentDesc = desc;
-            document.querySelectorAll('.trope-item, .card-item').forEach(el => {
+            document.querySelectorAll('.card-item').forEach(el => {
                 if(el.id.startsWith('tr-')) el.classList.remove('active');
             });
             document.getElementById(id).classList.add('active');
@@ -376,8 +376,13 @@
             currentNode = 'node1';
             activeToy = '';
             
-            init3D();
             renderNode();
+
+            try {
+                init3D();
+            } catch(err) {
+                console.warn("Error 3D:", err);
+            }
         }
 
         function renderNode() {
@@ -432,53 +437,69 @@
 
             charGroup = new THREE.Group();
             
-            let matHead;
+            let skinMat;
             if(customPhoto && currentStyle === 'Personalizado') {
                 const tex = new THREE.TextureLoader().load(customPhoto);
-                matHead = new THREE.MeshStandardMaterial({ map: tex });
+                skinMat = new THREE.MeshStandardMaterial({ map: tex });
             } else {
-                matHead = new THREE.MeshStandardMaterial({ color: 0xffdbac });
+                skinMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.5 });
             }
 
-            const bodyMat = new THREE.MeshStandardMaterial({ color: currentColor });
+            const outfitMat = new THREE.MeshStandardMaterial({ color: currentColor, roughness: 0.3 });
 
-            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.1), bodyMat);
-            body.position.y = 0.55;
-
-            const head = new THREE.Mesh(currentStyle === 'Personalizado' ? new THREE.BoxGeometry(0.55, 0.65, 0.5) : new THREE.SphereGeometry(0.3, 16, 16), matHead);
-            head.position.y = 1.35;
-
-            charGroup.add(body, head);
-            charGroup.position.y = -0.6;
-            scene.add(charGroup);
-
-            renderer.domElement.addEventListener('pointerdown', () => {
-                passion = Math.min(100, passion + 5);
-                updateHUD();
-                if(charGroup) {
-                    charGroup.scale.set(1.1, 0.9, 1.1);
-                    setTimeout(() => charGroup.scale.set(1,1,1), 150);
-                }
-            });
-
-            animate();
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if(charGroup) {
-                charGroup.rotation.y += 0.005;
-            }
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            if(camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
-    </script>
-</body>
-</html>
+            // CONSTRUCTOR DE MODELOS 3D ESTILIZADOS
+            if (currentStyle === 'Realista' || currentStyle === 'Personalizado') {
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.2), outfitMat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(currentStyle === 'Personalizado' ? new THREE.BoxGeometry(0.55, 0.65, 0.5) : new THREE.SphereGeometry(0.32, 16, 16), skinMat);
+                head.position.y = 1.45;
+                charGroup.add(body, head);
+            } 
+            else if (currentStyle === 'Manga') {
+                // Cuerpo cónico y pelo puntiagudo característico
+                const body = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.2, 16), outfitMat);
+                body.position.y = 0.6;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), skinMat);
+                head.position.y = 1.45;
+                // Mechón de pelo anime superior
+                const hairMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+                const hair = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.5, 4), hairMat);
+                hair.position.set(0, 1.85, 0);
+                hair.rotation.z = -0.2;
+                charGroup.add(body, head, hair);
+            } 
+            else if (currentStyle === 'Simpson') {
+                const yellowSkin = new THREE.MeshStandardMaterial({ color: 0xffd90f, roughness: 0.4 });
+                const bluePants = new THREE.MeshStandardMaterial({ color: 0x0085c3 });
+                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.0), bluePants);
+                body.position.y = 0.5;
+                // Cabeza cilíndrica alargada típica
+                const head = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.85, 16), yellowSkin);
+                head.position.y = 1.35;
+                charGroup.add(body, head);
+            } 
+            else if (currentStyle === 'Looney Tunes') {
+                // Cuerpo esférico y orejas largas
+                const body = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 16), outfitMat);
+                body.position.y = 0.55;
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), outfitMat);
+                head.position.y = 1.35;
+                const earGeo = new THREE.CapsuleGeometry(0.1, 0.6, 4, 8);
+                const ear1 = new THREE.Mesh(earGeo, outfitMat);
+                ear1.position.set(-0.2, 1.9, 0);
+                ear1.rotation.z = -0.2;
+                const ear2 = ear1.clone();
+                ear2.position.x = 0.2;
+                ear2.rotation.z = 0.2;
+                charGroup.add(body, head, ear1, ear2);
+            } 
+            else if (currentStyle === 'Padre de Familia') {
+                // Cuerpo robusto y barbilla prominente
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.1, 0.55), outfitMat);
+                body.position.y = 0.55;
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 0.65), skinMat);
+                head.position.y = 1.35;
+                charGroup.add(body, head);
+            } 
+            else if (currentStyle === 'Demon Slayer') {
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.45),
