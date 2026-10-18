@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lust Multiverse - Visual Novel Engine</title>
+    <title>Lust Multiverse Mobile</title>
     <style>
         * { box-sizing: border-box; }
         body, html {
@@ -11,7 +11,7 @@
             width: 100%; height: 100%;
             overflow: hidden;
             background-color: #050508;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             user-select: none;
             color: #fff;
         }
@@ -23,7 +23,7 @@
             z-index: 1;
         }
 
-        /* CAPA DE INTERFAZ ESTILO LUSTFIELD */
+        /* HUD DE JUEGO */
         .ui-layer {
             position: absolute;
             z-index: 10;
@@ -32,435 +32,381 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 12px;
+            padding: 10px;
         }
 
-        /* Panel Superior de Estadísticas */
         .top-hud {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(15, 15, 25, 0.85);
-            padding: 10px 15px;
-            border-radius: 12px;
+            background: rgba(15, 15, 25, 0.9);
+            padding: 8px 12px;
+            border-radius: 10px;
             pointer-events: auto;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 0, 85, 0.3);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 0, 85, 0.4);
         }
 
-        .stat-group {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .meter-bar-container {
-            width: 140px;
+        .meter-box {
+            width: 120px;
             background: #222;
             height: 10px;
             border-radius: 5px;
             overflow: hidden;
             border: 1px solid #444;
         }
-        #affection-bar {
-            width: 0%; height: 100%;
-            background: linear-gradient(90deg, #ff0055, #ff3399);
-            transition: width 0.4s ease;
+        #passion-fill {
+            width: 10%; height: 100%;
+            background: linear-gradient(90deg, #ff0055, #ffcc00);
+            transition: width 0.3s ease;
         }
 
-        /* Panel Lateral de Juguetes / Accesorios */
-        .side-panel {
+        /* PANEL LATERAL DE JUGUETES */
+        .side-toys {
             position: absolute;
-            top: 80px; left: 12px;
+            top: 75px; left: 10px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             pointer-events: auto;
         }
-        .action-btn {
-            background: rgba(20, 20, 35, 0.9);
+        .toy-pill {
+            background: #1f122e;
             border: 1px solid #ff0055;
             color: #ffb6c1;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: bold;
-            text-align: left;
-            backdrop-filter: blur(4px);
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            cursor: pointer;
         }
-        .action-btn:hover {
-            background: #ff0055;
-            color: white;
-            transform: translateX(3px);
-        }
+        .toy-pill:active { background: #ff0055; color: #fff; }
 
-        /* Caja de Diálogo Estilo Visual Novel Inferior */
-        .dialog-container {
+        /* CAJA DE DIÁLOGO INFERIOR */
+        .dialog-panel {
             background: rgba(10, 10, 18, 0.95);
             border: 2px solid #ff0055;
-            border-radius: 16px;
-            padding: 18px;
+            border-radius: 12px;
+            padding: 15px;
             pointer-events: auto;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 40px rgba(255, 0, 85, 0.35);
             margin-bottom: 5px;
+            box-shadow: 0 5px 25px rgba(255,0,85,0.4);
         }
 
-        #speaker-name {
-            font-size: 1.05rem;
+        #speaker-title {
+            font-size: 0.95rem;
             color: #ff3399;
             font-weight: bold;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        #dialog-text {
-            font-size: 1.05rem;
-            line-height: 1.5;
-            margin-bottom: 14px;
-            min-height: 45px;
-            color: #f1f1f1;
+        #dialog-content {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            min-height: 40px;
         }
 
-        .choices-box {
+        .options-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .choice-option {
-            background: linear-gradient(135deg, #1d1d35, #2d2d55);
+        .option-btn {
+            background: #1c1c36;
             color: white;
             border: 1px solid #ff0055;
-            padding: 11px 16px;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-align: left;
-            transition: all 0.2s ease;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
-        .choice-option:hover {
-            background: linear-gradient(135deg, #ff0055, #cc0044);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.5);
-        }
+        .option-btn:active { background: #ff0055; }
 
-        /* Menú Principal de Configuración */
-        #menu-overlay {
+        /* MENÚ INICIAL */
+        #main-menu {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(4, 4, 10, 0.98);
+            background: #06060c;
             z-index: 100;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
         }
 
-        .menu-wrapper {
-            max-width: 800px;
+        .menu-container {
+            max-width: 600px;
             width: 100%;
-            margin: auto;
         }
 
-        .menu-section {
-            margin-bottom: 20px;
+        .section-box {
+            margin-bottom: 15px;
         }
 
-        .menu-title {
+        .section-label {
             color: #ff0055;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
+            font-size: 1rem;
             font-weight: bold;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 3px;
         }
 
-        .options-grid {
+        .grid-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
         }
 
-        .menu-card {
-            background: #141426;
+        .card-item {
+            background: #111122;
             border: 2px solid #333;
-            border-radius: 10px;
-            padding: 12px;
+            border-radius: 8px;
+            padding: 10px 5px;
             cursor: pointer;
             text-align: center;
-            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
-        .menu-card:hover {
+        .card-item.active {
             border-color: #ff0055;
-            background: #1e1e38;
-        }
-        .menu-card.selected {
-            border-color: #ff0055 !important;
-            background: #2a1538 !important;
-            box-shadow: 0 0 15px rgba(255,0,85,0.5);
+            background: #2a122e;
         }
 
-        .upload-box {
-            background: linear-gradient(135deg, #2a1538, #4a1238);
+        .upload-card {
+            background: #221028;
             border: 2px dashed #ff0055;
+            color: #ff77aa;
         }
-        #file-input { display: none; }
+        #img-file { display: none; }
 
-        .main-start-btn {
-            background: linear-gradient(135deg, #ff0055, #990033);
+        .launch-btn {
+            background: #ff0055;
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.15rem;
+            padding: 14px;
+            font-size: 1rem;
             font-weight: bold;
-            border-radius: 30px;
+            border-radius: 25px;
+            width: 100%;
             cursor: pointer;
-            display: block;
-            margin: 20px auto 40px auto;
-            box-shadow: 0 5px 25px rgba(255,0,85,0.6);
-            transition: transform 0.2s;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(255,0,85,0.6);
         }
-        .main-start-btn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-    <!-- MENÚ PRINCIPAL TIPO LUSTFIELD -->
-    <div id="menu-overlay">
-        <h1 style="color: #ff0055; font-size: 1.8rem; margin-bottom: 5px; text-align: center;">LUST MULTIVERSE</h1>
-        <p style="color: #aaa; text-align: center; font-size: 0.85rem; margin-bottom: 25px;">Selecciona la personalización visual y el escenario de novela interactiva.</p>
+    <!-- MENÚ PRINCIPAL -->
+    <div id="main-menu">
+        <h1 style="color: #ff0055; font-size: 1.5rem; margin: 10px 0 5px 0; text-align: center;">LUST MULTIVERSE</h1>
+        <p style="color: #88; font-size: 0.8rem; text-align: center; margin-bottom: 15px;">Selecciona estilo y tropo para jugar</p>
         
-        <div class="menu-wrapper">
-            <!-- 1. Estilo Visual -->
-            <div class="menu-section">
-                <div class="menu-title">1. Estilo Visual del Personaje</div>
-                <div class="options-grid">
-                    <label class="menu-card upload-box" for="file-input" id="card-photo">
-                        <span style="color:#ff77aa; font-weight:bold; font-size:0.85rem;">Subir Foto</span>
-                    </label>
-                    <input type="file" id="file-input" accept="image/*" onchange="loadCustomImage(event)">
-
-                    <div class="menu-card char-card selected" id="card-realista" onclick="selectCharacter('Realista', 0x334155, 'card-realista')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Realista</span>
-                    </div>
-                    <div class="menu-card char-card" id="card-manga" onclick="selectCharacter('Manga', 0xff0055, 'card-manga')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Manga</span>
-                    </div>
-                    <div class="menu-card char-card" id="card-simpson" onclick="selectCharacter('Simpson', 0xd97706, 'card-simpson')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Simpson</span>
-                    </div>
-                    <div class="menu-card char-card" id="card-looney" onclick="selectCharacter('Looney Tunes', 0x94a3b8, 'card-looney')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Looney Tunes</span>
-                    </div>
-                    <div class="menu-card char-card" id="card-family" onclick="selectCharacter('Padre de Familia', 0x16a34a, 'card-family')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Padre de Familia</span>
-                    </div>
-                    <div class="menu-card char-card" id="card-demon" onclick="selectCharacter('Demon Slayer', 0x0284c7, 'card-demon')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Demon Slayer</span>
-                    </div>
+        <div class="menu-container">
+            <!-- Estilo Visual -->
+            <div class="section-box">
+                <div class="section-label">1. Estilo Visual</div>
+                <div class="grid-cards">
+                    <label class="card-item upload-card" for="img-file" id="lbl-photo">Subir Foto</label>
+                    <input type="file" id="img-file" accept="image/*" onchange="handleImage(event)">
+                    
+                    <div class="card-item active" id="st-realista" onclick="setStyle('Realista', 0x334155, 'st-realista')">Realista</div>
+                    <div class="card-item" id="st-manga" onclick="setStyle('Manga', 0xff0055, 'st-manga')">Manga</div>
+                    <div class="card-item" id="st-simpson" onclick="setStyle('Simpson', 0xd97706, 'st-simpson')">Simpson</div>
+                    <div class="card-item" id="st-looney" onclick="setStyle('Looney Tunes', 0x94a3b8, 'st-looney')">Looney Tunes</div>
+                    <div class="card-item" id="st-family" onclick="setStyle('Padre de Familia', 0x16a34a, 'st-family')">Padre de Familia</div>
+                    <div class="card-item" id="st-demon" onclick="setStyle('Demon Slayer', 0x0284c7, 'st-demon')">Demon Slayer</div>
                 </div>
             </div>
 
-            <!-- 2. Tropo / Historia -->
-            <div class="menu-section">
-                <div class="menu-title">2. Escenario / Tropo Adulto</div>
-                <div class="options-grid">
-                    <div class="menu-card trope-card selected" id="trope-jefe" onclick="selectTrope('Jefe y Empleada', 'Oficina nocturna', 'trope-jefe')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Jefe / Empleada</span>
-                    </div>
-                    <div class="menu-card trope-card" id="trope-cunado" onclick="selectTrope('Cuñado y Cuñada', 'Tarde a solas', 'trope-cunado')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Cuñado / Cuñada</span>
-                    </div>
-                    <div class="menu-card trope-card" id="trope-madrastra" onclick="selectTrope('Madrastra', 'Conversación íntima', 'trope-madrastra')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Madrastra</span>
-                    </div>
-                    <div class="menu-card trope-card" id="trope-vecina" onclick="selectTrope('La Vecina', 'Visita inesperada', 'trope-vecina')">
-                        <span style="font-size:0.85rem; font-weight:bold;">La Vecina</span>
-                    </div>
-                    <div class="menu-card trope-card" id="trope-camarera" onclick="selectTrope('Camarera', 'Cierre del local', 'trope-camarera')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Camarera</span>
-                    </div>
-                    <div class="menu-card trope-card" id="trope-masajista" onclick="selectTrope('Masajista', 'Gabinete privado', 'trope-masajista')">
-                        <span style="font-size:0.85rem; font-weight:bold;">Masajista</span>
-                    </div>
+            <!-- Tropo / Historia -->
+            <div class="section-box">
+                <div class="section-label">2. Historia / Tropo</div>
+                <div class="grid-cards">
+                    <div class="card-item active" id="tr-jefe" onclick="setTrope('Jefe y Empleada', 'Oficina nocturna', 'tr-jefe')">Jefe / Empleada</div>
+                    <div class="card-item" id="tr-cunado" onclick="setTrope('Cuñado y Cuñada', 'Tarde a solas', 'tr-cunado')">Cuñado / Cuñada</div>
+                    <div class="card-item" id="tr-madrastra" onclick="setTrope('Madrastra', 'Salón de casa', 'tr-madrastra')">Madrastra</div>
+                    <div class="card-item" id="tr-vecina" onclick="setTrope('La Vecina', 'Visita inesperada', 'tr-vecina')">La Vecina</div>
+                    <div class="card-item" id="tr-camarera" onclick="setTrope('Camarera', 'Cierre del bar', 'tr-camarera')">Camarera</div>
+                    <div class="card-item" id="tr-masajista" onclick="setTrope('Masajista', 'Gabinete privado', 'tr-masajista')">Masajista</div>
                 </div>
             </div>
 
-            <button class="main-start-btn" onclick="initGameSession()">JUGAR AHORA</button>
+            <button class="launch-btn" onclick="startGame()">COMENZAR JUEGO</button>
         </div>
     </div>
 
-    <!-- CONTENEDOR 3D -->
+    <!-- ESCENARIO 3D -->
     <div id="canvas-container"></div>
 
-    <!-- HUD DE JUEGO PRINCIPAL -->
-    <div class="ui-layer" id="game-ui" style="display: none;">
+    <!-- HUD DE JUEGO -->
+    <div class="ui-layer" id="game-hud" style="display: none;">
         <div class="top-hud">
-            <div class="stat-group">
-                <span id="hud-char-title" style="font-weight: bold; color: #ff3399; font-size: 0.9rem;">Personaje</span>
-                <span id="hud-trope-title" style="font-size: 0.75rem; color: #aaa;">Tropo</span>
+            <div>
+                <div id="hud-style" style="font-weight: bold; color: #ff3399; font-size: 0.8rem;">Estilo</div>
+                <div id="hud-trope" style="font-size: 0.7rem; color: #aaa;">Tropo</div>
             </div>
-            <div class="stat-group" style="align-items: flex-end;">
-                <span style="font-size: 0.75rem; color: #bbb;">Nivel de Afecto / Pasión</span>
-                <div class="meter-bar-container">
-                    <div id="affection-bar"></div>
-                </div>
+            <div>
+                <div style="font-size: 0.65rem; color: #bbb; text-align: right; margin-bottom: 2px;">Pasión</div>
+                <div class="meter-box"><div id="passion-fill"></div></div>
             </div>
         </div>
 
-        <!-- Panel Lateral de Juguetes / Accesorios Eróticos -->
-        <div class="side-panel">
-            <button class="action-btn" onclick="useAccessory('Vibrador')"> Vibrador</button>
-            <button class="action-btn" onclick="useAccessory('Esposas')"> Esposas</button>
-            <button class="action-btn" onclick="useAccessory('Aceite Cálido')"> Aceite</button>
-            <button class="action-btn" onclick="useAccessory('Varita Mágica')"> Varita Mágica</button>
+        <div class="side-toys">
+            <div class="toy-pill" onclick="useToy('Vibrador')"> vibrador</div>
+            <div class="toy-pill" onclick="useToy('Esposas')"> esposas</div>
+            <div class="toy-pill" onclick="useToy('Aceite')"> aceite</div>
         </div>
 
-        <div class="dialog-container">
-            <div id="speaker-name">Nombre</div>
-            <div id="dialog-text">Cargando texto...</div>
-            <div class="choices-box" id="choices-box"></div>
+        <div class="dialog-panel">
+            <div id="speaker-title">Nombre</div>
+            <div id="dialog-content">Texto...</div>
+            <div class="options-list" id="options-box"></div>
         </div>
     </div>
 
+    <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        let scene, camera, renderer, characterGroup;
-        let selStyle = 'Realista', selColor = 0x334155;
-        let selTropeName = 'Jefe y Empleada', selTropeDesc = 'Oficina nocturna';
-        let customTextureURL = null;
-        let affectionLevel = 10;
-        let currentNode = 'start';
-        let activeAccessory = '';
+        let currentStyle = 'Realista', currentColor = 0x334155;
+        let currentTrope = 'Jefe y Empleada', currentDesc = 'Oficina nocturna';
+        let customPhoto = null;
+        let passion = 15;
+        let currentNode = 'node1';
+        let activeToy = '';
+        let scene, camera, renderer, charGroup;
 
-        function selectCharacter(style, color, elementId) {
-            selStyle = style;
-            selColor = color;
-            customTextureURL = null;
-            document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById('card-photo').classList.remove('selected');
-            document.getElementById(elementId).classList.add('selected');
+        function setStyle(style, color, id) {
+            currentStyle = style;
+            currentColor = color;
+            customPhoto = null;
+            document.querySelectorAll('.char-item, .card-item').forEach(el => {
+                if(!el.classList.contains('upload-card')) el.classList.remove('active');
+            });
+            document.getElementById(id).classList.add('active');
+            document.getElementById('lbl-photo').classList.remove('active');
         }
 
-        function selectTrope(name, desc, elementId) {
-            selTropeName = name;
-            selTropeDesc = desc;
-            document.querySelectorAll('.trope-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById(elementId).classList.add('selected');
+        function setTrope(trope, desc, id) {
+            currentTrope = trope;
+            currentDesc = desc;
+            document.querySelectorAll('.trope-item, .card-item').forEach(el => {
+                if(el.id.startsWith('tr-')) el.classList.remove('active');
+            });
+            document.getElementById(id).classList.add('active');
         }
 
-        function loadCustomImage(event) {
-            const file = event.target.files[0];
-            if (file) {
+        function handleImage(e) {
+            const file = e.target.files[0];
+            if(file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    customTextureURL = e.target.result;
-                    selStyle = 'Personalizado';
-                    selColor = 0x666666;
-                    document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
-                    document.getElementById('card-photo').classList.add('selected');
+                reader.onload = function(evt) {
+                    customPhoto = evt.target.result;
+                    currentStyle = 'Personalizado';
+                    currentColor = 0x666666;
+                    document.querySelectorAll('.card-item').forEach(el => el.classList.remove('active'));
+                    document.getElementById('lbl-photo').classList.add('active');
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        // ÁRBOL DE DECISIONES DE LA NOVELA INTERACTIVA
-        const storyTree = {
-            start: {
-                speaker: () => selTropeName,
-                text: () => `Situación (${selTropeDesc}): Te mira fijamente con una sonrisa sugerente mientras se cruza de brazos lentamente. "¿Qué se supone que estás haciendo tan tarde por aquí?", pregunta con tono cómplice.`,
+        // ÁRBOL DE HISTORIAS
+        const story = {
+            node1: {
+                text: () => `Estás en la situación de (${currentTrope}): ${currentDesc}. Se acerca lentamente con una sonrisa cómplice. ¿Qué haces?`,
                 choices: [
-                    { text: "Acercarme despacio y acariciar su mejilla.", next: "branch_touch", aff: 15 },
-                    { text: "Decirle algo atrevido y directo al oído.", next: "branch_whisper", aff: 25 },
-                    { text: "Tomarle de la cintura y bloquear su salida.", next: "branch_grip", aff: 35 }
+                    { text: "Acercarme y acariciar su rostro.", next: "node2", add: 20 },
+                    { text: "Decirle algo sugerente al oído.", next: "node3", add: 35 },
+                    { text: "Tomarle de la cintura con firmeza.", next: "node4", add: 50 }
                 ]
             },
-            branch_touch: {
-                speaker: () => selTropeName,
-                text: "Cierra los ojos un instante disfrutando del tacto, arqueando ligeramente el cuerpo hacia ti con una respiración más profunda.",
+            node2: {
+                text: "Cierra los ojos disfrutando del tacto, arqueando ligeramente el cuerpo hacia ti con respiración agitada.",
                 choices: [
-                    { text: "Deslizar mis manos lentamente hacia su espalda.", next: "branch_deep", aff: 25 },
-                    { text: "Dar un beso suave y prolongado en su cuello.", next: "branch_neck", aff: 40 }
+                    { text: "Deslizar mis manos hacia su espalda.", next: "climax", add: 30 },
+                    { text: "Dar un beso lento en su cuello.", next: "climax", add: 45 }
                 ]
             },
-            branch_whisper: {
-                speaker: () => selTropeName,
-                text: "Se le escapa una risa nerviosa seguida de un suspiro. Su mirada cambia por completo, volviéndose mucho más intensa y atrevida.",
+            node3: {
+                text: "Se le escapa una risa nerviosa seguida de un suspiro profundo. Su mirada se vuelve mucho más intensa.",
                 choices: [
-                    { text: "Morder suavemente su lóbulo y tirar de él.", next: "branch_deep", aff: 35 },
-                    { text: "Empujarle con suavidad contra la pared.", next: "branch_wall", aff: 50 }
+                    { text: "Morder suavemente su lóbulo.", next: "climax", add: 40 },
+                    { text: "Empujar con suavidad contra la pared.", next: "climax", add: 55 }
                 ]
             },
-            branch_grip: {
-                speaker: () => selTropeName,
-                text: "Un escalofrío recorre su cuerpo ante el agarre repentino. Te sostiene de los hombros con fuerza mientras la tensión en la habitación se dispara.",
+            node4: {
+                text: "Un escalofrío recorre su cuerpo ante el agarre repentino. Te sostiene de los hombros con fuerza.",
                 choices: [
-                    { text: "Unir vuestros labios en un beso apasionado e interminable.", next: "climax_scene", aff: 50 },
-                    { text: "Cargarle en brazos y llevarle hacia el sofá.", next: "climax_scene", aff: 65 }
+                    { text: "Unir vuestros labios en un beso apasionado.", next: "climax", add: 50 }
                 ]
             },
-            branch_deep: {
-                speaker: () => selTropeName,
-                text: "La distancia entre ambos desaparece por completo. El ambiente se vuelve sumamente cálido y cercano.",
+            climax: {
+                text: () => `🔥 [ESCENA ÍNTIMA ACTIVA] Tropo: ${currentTrope} | Estilo: ${currentStyle}. ${activeToy ? 'Juguete: ' + activeToy + '.' : ''} La pasión ha llegado al límite.`,
                 choices: [
-                    { text: "Continuar explorando cada rincón con total libertad.", next: "climax_scene", aff: 40 }
-                ]
-            },
-            branch_neck: {
-                speaker: () => selTropeName,
-                text: "Tus labios rozan su piel sensible, provocando que deje escapar un gemido ahogado mientras se aferra firmemente a tu ropa.",
-                choices: [
-                    { text: "Pasar a la fase íntima principal sin censura.", next: "climax_scene", aff: 45 }
-                ]
-            },
-            branch_wall: {
-                speaker: () => selTropeName,
-                text: "Queda contra la pared, respirando de forma agitada y pidiendo más acción con la mirada.",
-                choices: [
-                    { text: "Elevar la temperatura al máximo nivel.", next: "climax_scene", aff: 55 }
-                ]
-            },
-            climax_scene: {
-                speaker: () => "NARRADOR (+18)",
-                text: () => `🔥 [ESCENA ÍNTIMA DESBLOQUEADA] Tropo: ${selTropeName} | Estilo: ${selStyle}. ${activeAccessory ? 'Accesorio empleado: ' + activeAccessory + '.' : 'Has alcanzado el punto álgido de la interacción con éxito total.'}`,
-                choices: [
-                    { text: "🔄 Reiniciar historia con otra combinación", next: "start", aff: -100 }
+                    { text: "🔄 Reiniciar experiencia", next: "node1", add: -100 }
                 ]
             }
         };
 
-        function useAccessory(accName) {
-            activeAccessory = accName;
-            affectionLevel = Math.min(100, affectionLevel + 30);
+        function useToy(toy) {
+            activeToy = toy;
+            passion = Math.min(100, passion + 25);
             updateHUD();
-            updateNode();
-            if (characterGroup) {
-                characterGroup.scale.set(1.25, 0.75, 1.25);
-                setTimeout(() => characterGroup.scale.set(1, 1, 1), 250);
+            renderNode();
+            if(charGroup) {
+                charGroup.scale.set(1.2, 0.8, 1.2);
+                setTimeout(() => charGroup.scale.set(1,1,1), 200);
             }
         }
 
-        function initGameSession() {
-            document.getElementById('menu-overlay').style.display = 'none';
-            document.getElementById('game-ui').style.display = 'flex';
-            document.getElementById('hud-char-title').innerText = `Estilo: ${selStyle}`;
-            document.getElementById('hud-trope-title').innerText = `Tropo: ${selTropeName}`;
-
-            affectionLevel = 10;
-            currentNode = 'start';
-            activeAccessory = '';
-
+        function startGame() {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('game-hud').style.display = 'flex';
+            document.getElementById('hud-style').innerText = `Estilo: ${currentStyle}`;
+            document.getElementById('hud-trope').innerText = `Tropo: ${currentTrope}`;
+            
+            passion = 15;
+            currentNode = 'node1';
+            activeToy = '';
+            
             init3D();
-            updateNode();
+            renderNode();
+        }
+
+        function renderNode() {
+            const data = story[currentNode];
+            if(!data) return;
+
+            document.getElementById('speaker-title').innerText = currentTrope;
+            document.getElementById('dialog-content').innerText = typeof data.text === 'function' ? data.text() : data.text;
+
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+
+            data.choices.forEach(ch => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = ch.text;
+                btn.onclick = () => {
+                    if(ch.add === -100) passion = 15;
+                    else passion = Math.min(100, passion + ch.add);
+                    currentNode = ch.next;
+                    updateHUD();
+                    renderNode();
+                };
+                box.appendChild(btn);
+            });
+        }
+
+        function updateHUD() {
+            document.getElementById('passion-fill').style.width = `${passion}%`;
         }
 
         function init3D() {
@@ -469,10 +415,70 @@
 
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x0a050f);
-            scene.fog = new THREE.FogExp2(0x0a050f, 0.04);
 
             camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 1.5, 6);
+            camera.position.set(0, 1.5, 5.5);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, windo
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            const amb = new THREE.AmbientLight(0xffb6c1, 0.8);
+            scene.add(amb);
+
+            const point = new THREE.PointLight(0xff0055, 2, 10);
+            point.position.set(2, 3, 2);
+            scene.add(point);
+
+            charGroup = new THREE.Group();
+            
+            let matHead;
+            if(customPhoto && currentStyle === 'Personalizado') {
+                const tex = new THREE.TextureLoader().load(customPhoto);
+                matHead = new THREE.MeshStandardMaterial({ map: tex });
+            } else {
+                matHead = new THREE.MeshStandardMaterial({ color: 0xffdbac });
+            }
+
+            const bodyMat = new THREE.MeshStandardMaterial({ color: currentColor });
+
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.1), bodyMat);
+            body.position.y = 0.55;
+
+            const head = new THREE.Mesh(currentStyle === 'Personalizado' ? new THREE.BoxGeometry(0.55, 0.65, 0.5) : new THREE.SphereGeometry(0.3, 16, 16), matHead);
+            head.position.y = 1.35;
+
+            charGroup.add(body, head);
+            charGroup.position.y = -0.6;
+            scene.add(charGroup);
+
+            renderer.domElement.addEventListener('pointerdown', () => {
+                passion = Math.min(100, passion + 5);
+                updateHUD();
+                if(charGroup) {
+                    charGroup.scale.set(1.1, 0.9, 1.1);
+                    setTimeout(() => charGroup.scale.set(1,1,1), 150);
+                }
+            });
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if(charGroup) {
+                charGroup.rotation.y += 0.005;
+            }
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            if(camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+    </script>
+</body>
+</html>
