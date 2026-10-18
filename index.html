@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lust Multiverse - Marge Simpson 3D</title>
+    <title>Lust Multiverse - Personaje 3D</title>
     <style>
         * { box-sizing: border-box; }
         body, html {
@@ -37,33 +37,32 @@
 
         .header-box {
             background: rgba(15, 12, 25, 0.85);
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-radius: 12px;
             pointer-events: auto;
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 0, 85, 0.3);
             text-align: center;
-            max-width: 400px;
+            max-width: 350px;
             margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         h1 {
             color: #ff0055;
-            font-size: 1.3rem;
-            margin: 0 0 5px 0;
+            font-size: 1.15rem;
+            margin: 0 0 4px 0;
             text-transform: uppercase;
         }
 
         p {
             margin: 0;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #aaa;
         }
 
         .footer-controls {
             background: rgba(15, 12, 25, 0.9);
-            padding: 15px;
+            padding: 12px 20px;
             border-radius: 15px;
             pointer-events: auto;
             backdrop-filter: blur(10px);
@@ -71,7 +70,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 500px;
+            max-width: 450px;
             width: 100%;
             margin: 0 auto;
         }
@@ -80,10 +79,10 @@
             background: linear-gradient(135deg, #ff0055, #990033);
             color: white;
             border: none;
-            padding: 12px 25px;
-            font-size: 0.95rem;
+            padding: 10px 20px;
+            font-size: 0.9rem;
             font-weight: bold;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(255,0,85,0.5);
         }
@@ -91,7 +90,6 @@
         .hint-rotate {
             font-size: 0.75rem;
             color: #ffb6c1;
-            text-align: center;
         }
     </style>
 </head>
@@ -101,13 +99,13 @@
 
     <div class="ui-overlay">
         <div class="header-box">
-            <h1>Estudio de Creación</h1>
-            <p>Personaje: Marge Simpson (Estilo Real de la Serie + Silueta Sensual)</p>
+            <h1>Marge Simpson 3D</h1>
+            <p>Modelo 360° con curvas estilizadas</p>
         </div>
 
         <div class="footer-controls">
-            <div class="hint-rotate">🔄 Arrastra para girar 360°<br>✨ Gráficos HD de la Serie</div>
-            <button class="btn-action" onclick="alert('¡Marge Simpson cargada con éxito! Listos para el siguiente paso de historias.')">Siguiente Paso</button>
+            <div class="hint-rotate">🔄 Arrastra para girar 360°</div>
+            <button class="btn-action" onclick="alert('¡Personaje 3D verificado correctamente!')">Siguiente</button>
         </div>
     </div>
 
@@ -115,7 +113,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <script>
-        let scene, camera, renderer, margeMesh;
+        let scene, camera, renderer, margeGroup;
         let clock = new THREE.Clock();
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
@@ -127,44 +125,33 @@
             scene.background = new THREE.Color(0x0c0814);
 
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0.5, 5);
+            camera.position.set(0, 1.0, 5.2);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
             container.appendChild(renderer.domElement);
 
-            // Iluminación ambiental cálida
-            const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+            // Iluminación profesional para resaltar volúmenes (pecho y glúteos)
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
 
-            const pointLight = new THREE.PointLight(0xff0055, 1.5, 10);
-            pointLight.position.set(2, 2, 3);
-            scene.add(pointLight);
+            const frontLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            frontLight.position.set(0, 2, 4);
+            scene.add(frontLight);
 
-            // Cargar el personaje real de Marge Simpson usando una ilustración oficial adaptada en alta calidad
-            const textureLoader = new THREE.TextureLoader();
-            // Usamos una URL directa optimizada con el diseño clásico real de Marge Simpson
-            textureLoader.load(
-                'https://upload.wikimedia.org/wikipedia/en/5/52/Marge_Simpson.png',
-                function(texture) {
-                    const geometry = new THREE.PlaneGeometry(2.2, 3.8);
-                    const material = new THREE.MeshBasicMaterial({ 
-                        map: texture, 
-                        transparent: true,
-                        side: THREE.DoubleSide 
-                    });
-                    
-                    margeMesh = new THREE.Mesh(geometry, material);
-                    margeMesh.position.y = 0.2;
-                    scene.add(margeMesh);
-                },
-                undefined,
-                function(error) {
-                    console.error("Error cargando la textura de Marge:", error);
-                }
-            );
+            const pinkLight = new THREE.PointLight(0xff0055, 2.5, 10);
+            pinkLight.position.set(2, 1, 2);
+            scene.add(pinkLight);
 
-            // Controles de rotación táctil 360 grados
+            const blueLight = new THREE.PointLight(0x00d2ff, 1.5, 10);
+            blueLight.position.set(-2, 1, -2);
+            scene.add(blueLight);
+
+            // Construir el personaje 3D detallado
+            buildMarge3DModel();
+
+            // Controles táctiles y de ratón 360°
             const dom = renderer.domElement;
             dom.addEventListener('pointerdown', (e) => {
                 isDragging = true;
@@ -174,8 +161,8 @@
             dom.addEventListener('pointermove', (e) => {
                 if (!isDragging) return;
                 const deltaX = e.clientX - previousMousePosition.x;
-                if (margeMesh) {
-                    margeMesh.rotation.y += deltaX * 0.01;
+                if (margeGroup) {
+                    margeGroup.rotation.y += deltaX * 0.01;
                 }
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             });
@@ -186,17 +173,76 @@
             animate();
         }
 
+        function buildMarge3DModel() {
+            margeGroup = new THREE.Group();
+
+            // Materiales con colores oficiales y brillo elegante
+            const skinMat = new THREE.MeshStandardMaterial({ color: 0xffd90f, roughness: 0.3 }); // Amarillo Simpson
+            const dressMat = new THREE.MeshStandardMaterial({ color: 0x28a745, roughness: 0.25, metalness: 0.1 }); // Vestido verde
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x0085c3, roughness: 0.3 }); // Pelo azul
+
+            // 1. Vestido / Torso con silueta reloj de arena (Cintura marcada)
+            const torsoGeo = new THREE.CylinderGeometry(0.22, 0.34, 1.1, 32);
+            const torso = new THREE.Mesh(torsoGeo, dressMat);
+            torso.position.y = 0.3;
+
+            // 2. Pecho (Realce frontal sensual y voluminoso)
+            const chestGeo = new THREE.SphereGeometry(0.25, 32, 16);
+            chestGeo.scale(1.2, 0.9, 1.3);
+            const chest = new THREE.Mesh(chestGeo, dressMat);
+            chest.position.set(0, 0.62, 0.12);
+
+            // 3. Glúteos (Volumen trasero pronunciado y elegante)
+            const glutesGeo = new THREE.SphereGeometry(0.28, 32, 16);
+            glutesGeo.scale(1.3, 1.1, 1.4);
+            const glutes = new THREE.Mesh(glutesGeo, dressMat);
+            glutes.position.set(0, -0.05, -0.15);
+
+            // 4. Cuello y Cabeza Amarilla
+            const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.3, 16), skinMat);
+            neck.position.y = 0.95;
+
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), skinMat);
+            head.position.y = 1.35;
+
+            // Ojos icónicos saltones
+            const eyeGeo = new THREE.SphereGeometry(0.1, 16, 16);
+            const pupilGeo = new THREE.SphereGeometry(0.04, 16, 16);
+            const whiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const blackMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+
+            const eyeL = new THREE.Mesh(eyeGeo, whiteMat);
+            eyeL.position.set(0.12, 1.4, 0.28);
+            const pupilL = new THREE.Mesh(pupilGeo, blackMat);
+            pupilL.position.set(0.14, 1.4, 0.36);
+
+            const eyeR = new THREE.Mesh(eyeGeo, whiteMat);
+            eyeR.position.set(-0.12, 1.4, 0.28);
+            const pupilR = new THREE.Mesh(pupilGeo, blackMat);
+            pupilR.position.set(-0.14, 1.4, 0.36);
+
+            // 5. Icónico Pelo Alto Azul
+            const hairGeo = new THREE.CylinderGeometry(0.3, 0.38, 1.6, 32);
+            const hair = new THREE.Mesh(hairGeo, hairMat);
+            hair.position.y = 2.35;
+
+            // Ensamblar todo en el grupo principal
+            margeGroup.add(torso, chest, glutes, neck, head, eyeL, pupilL, eyeR, pupilR, hair);
+            margeGroup.position.y = -0.35;
+            scene.add(margeGroup);
+        }
+
         function animate() {
             requestAnimationFrame(animate);
             const elapsedTime = clock.getElapsedTime();
 
-            if (margeMesh) {
-                // Movimiento natural de respiración (leve balanceo vertical)
-                margeMesh.position.y = 0.2 + Math.sin(elapsedTime * 2) * 0.03;
+            if (margeGroup) {
+                // Movimiento de respiración natural y sutil
+                margeGroup.position.y = -0.35 + Math.sin(elapsedTime * 2) * 0.02;
                 
-                // Rotación automática sutil de coqueteo si el usuario no está arrastrando la pantalla
+                // Rotación automática suave de coqueteo si no se está arrastrando
                 if (!isDragging) {
-                    margeMesh.rotation.y = Math.sin(elapsedTime * 0.8) * 0.15;
+                    margeGroup.rotation.y = Math.sin(elapsedTime * 0.8) * 0.2;
                 }
             }
 
